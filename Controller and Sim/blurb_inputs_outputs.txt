@@ -1,0 +1,34 @@
+controllers/open_loop.py
+
+	Inputs: t, state dict, cfg
+
+	Outputs: (deltaS_deg, deltaD_deg)
+
+	Purpose: defines control law. Open-loop returns constants.
+
+
+aero.py
+
+	Inputs: CSV data, (alpha, beta, deltaS, deltaD)
+
+	Outputs: aero coefficient dict {CL, CD, CY, Cl, Cm, Cn}
+
+	Purpose: interpolation + optional superposition.
+
+
+dynamics.py
+
+	Inputs: State, Vehicle, Environment, AeroModel, (deltaS, deltaD), cfg
+
+	Outputs: forces/moments; integrated next State
+
+	Purpose: all physics/integration.
+
+
+run_sim.py
+
+	Inputs: your config at top + controller module name
+
+	Outputs: sim_out.csv + plots + animation
+
+	Purpose: orchestration and visualization.
