@@ -33,10 +33,11 @@ import aero  #aero.py
 # =============================================================================
 
 CSV_PATH = r"..\aero_autosweep.csv"
-OUTPUT_CSV = r"sim_out_testF_og.csv"
+OUTPUT_CSV = r"sim_out_testE_newmlp.csv"
 
 # Controller module path (must expose controller(t, state, cfg))
-CONTROLLER_MODULE = "controllers.heading_pitch_hold"
+#CONTROLLER_MODULE = "controllers.heading_pitch_hold"
+CONTROLLER_MODULE = "controllers.heading_pitch_hold_mlp_gain_scheduled"
 
 #open loop: "controllers.open_loop"
 #heading 2loop: "controllers.heading_hold"
@@ -83,8 +84,8 @@ DELTA_D_DEG = 0.0
 # ============================================================
 
 #OG
-HEADING_CMD_DEG = 50.0  # desired heading (deg)
-PITCH_CMD_DEG   = 3.0   # desired pitch (deg)
+#HEADING_CMD_DEG = 50.0  # desired heading (deg)
+#PITCH_CMD_DEG   = 3.0   # desired pitch (deg)
 
 #A
 #HEADING_CMD_DEG = 10.0
@@ -114,16 +115,14 @@ PITCH_CMD_DEG   = 3.0   # desired pitch (deg)
 #OMEGA0_BODY = [0.0, 0.0, 0.0]
 
 # E
-#HEADING_CMD_DEG = 20.0
-#PITCH_CMD_DEG = 0.0
+HEADING_CMD_DEG = 20.0
+PITCH_CMD_DEG = 0.0
 
-#VEL0_WORLD = [20.0, 0.0, -3.0]
-#HEADING_DEG = 0.0
-#PITCH_DEG = 8.0
-#ROLL_DEG = 20.0
-#OMEGA0_BODY = [0.0, 0.0, 0.0]
-
-
+VEL0_WORLD = [20.0, 0.0, -3.0]
+HEADING_DEG = 0.0
+PITCH_DEG = 8.0
+ROLL_DEG = 20.0
+OMEGA0_BODY = [0.0, 0.0, 0.0]
 
 # ============================================================
 #heading, roll gains
@@ -228,6 +227,51 @@ MLP_MODEL_PATH = r"..\mlp_aero_state_dictV2.pt"
 X_SCALER_PATH = r"..\xScalerV2.pkl"
 Y_SCALER_PATH = r"..\yScalerV2.pkl"
 
+# ============================================================
+# MLP gain scheduling settings
+# ============================================================
+
+USE_MLP_GAIN_SCHEDULING = True
+
+# Finite-difference step for derivative estimates
+MLP_GS_H_DERIV_DEG = 1.0
+
+# Reference condition for nominal control effectiveness
+MLP_GS_REF_ALPHA_DEG = 5.0
+MLP_GS_REF_BETA_DEG = 0.0
+MLP_GS_REF_DELTAS_DEG = 0.0
+MLP_GS_REF_DELTAD_DEG = 0.0
+
+# If effectiveness gets very small, avoid huge gains
+MLP_GS_EFFECTIVENESS_EPS = 1e-5
+
+# Clamp scheduled gain scaling
+MLP_GS_GAIN_SCALE_MIN = 0.4
+MLP_GS_GAIN_SCALE_MAX = 2.5
+
+# Debug printing
+MLP_GS_PRINT_DEBUG = False
+MLP_GS_PRINT_DT = 1.0
+
+
+# ============================================================
+# Improved MLP gain scheduling / damping settings
+# ============================================================
+
+MLP_GS_ROLL_PROP_SCALE_POWER = 0.5
+MLP_GS_ROLL_DAMP_SCALE_POWER = 1.0
+
+MLP_GS_PITCH_PROP_SCALE_POWER = 0.5
+MLP_GS_PITCH_DAMP_SCALE_POWER = 1.0
+
+MLP_GS_ROLL_DAMP_MULT = 2.0
+MLP_GS_PITCH_DAMP_MULT = 2.0
+MLP_GS_YAW_DAMP_MULT = 1.5
+
+MLP_GS_DELTAS_RATE_MAX_DPS = 80.0
+MLP_GS_DELTAD_RATE_MAX_DPS = 80.0
+
+MLP_GS_COMMAND_SMOOTHING = 0.15
 
 # =============================================================================
 # END USER INPUTS
@@ -709,6 +753,45 @@ def main():
     cfg.q_cmd_max_dps  = float(Q_CMD_MAX_DPS)
     cfg.deltaS_max_deg = float(DELTAS_MAX_DEG)
 
+    # ------------------------------------------------------------
+    # MLP gain scheduling settings
+    # ------------------------------------------------------------
+    cfg.use_mlp_gain_scheduling = bool(USE_MLP_GAIN_SCHEDULING)
+
+    cfg.mlp_gs_h_deriv_deg = float(MLP_GS_H_DERIV_DEG)
+
+    cfg.mlp_gs_ref_alpha_deg = float(MLP_GS_REF_ALPHA_DEG)
+    cfg.mlp_gs_ref_beta_deg = float(MLP_GS_REF_BETA_DEG)
+    cfg.mlp_gs_ref_deltaS_deg = float(MLP_GS_REF_DELTAS_DEG)
+    cfg.mlp_gs_ref_deltaD_deg = float(MLP_GS_REF_DELTAD_DEG)
+
+    cfg.mlp_gs_effectiveness_eps = float(MLP_GS_EFFECTIVENESS_EPS)
+
+    cfg.mlp_gs_gain_scale_min = float(MLP_GS_GAIN_SCALE_MIN)
+    cfg.mlp_gs_gain_scale_max = float(MLP_GS_GAIN_SCALE_MAX)
+
+    cfg.mlp_gs_print_debug = bool(MLP_GS_PRINT_DEBUG)
+    cfg.mlp_gs_print_dt = float(MLP_GS_PRINT_DT)
+
+    cfg.mlp_gs_roll_prop_scale_power = float(MLP_GS_ROLL_PROP_SCALE_POWER)
+    cfg.mlp_gs_roll_damp_scale_power = float(MLP_GS_ROLL_DAMP_SCALE_POWER)
+
+    cfg.mlp_gs_pitch_prop_scale_power = float(MLP_GS_PITCH_PROP_SCALE_POWER)
+    cfg.mlp_gs_pitch_damp_scale_power = float(MLP_GS_PITCH_DAMP_SCALE_POWER)
+
+    cfg.mlp_gs_roll_damp_mult = float(MLP_GS_ROLL_DAMP_MULT)
+    cfg.mlp_gs_pitch_damp_mult = float(MLP_GS_PITCH_DAMP_MULT)
+    cfg.mlp_gs_yaw_damp_mult = float(MLP_GS_YAW_DAMP_MULT)
+
+    cfg.mlp_gs_deltaS_rate_max_dps = float(MLP_GS_DELTAS_RATE_MAX_DPS)
+    cfg.mlp_gs_deltaD_rate_max_dps = float(MLP_GS_DELTAD_RATE_MAX_DPS)
+
+    cfg.mlp_gs_command_smoothing = float(MLP_GS_COMMAND_SMOOTHING)
+
+    # Make these available to the controller-side alpha/beta clamp
+    cfg.max_alpha_deg = float(MAX_ALPHA_DEG)
+    cfg.max_beta_deg = float(MAX_BETA_DEG)
+
 
 
     # Load aero table -> build AeroModel
@@ -761,7 +844,44 @@ def main():
         )
 
     #aero_model = aero.AeroModel(df, cfg=aero_cfg, tol=DEFLECTION_TOL, use_superposition=USE_SUPERPOSITION)
+    # ------------------------------------------------------------
+    # Give controller access to aero model for MLP gain scheduling
+    # ------------------------------------------------------------
+    cfg.aero_model_for_controller = aero_model
 
+
+    def _estimate_nominal_effectiveness_for_gain_scheduling(aero_model, cfg):
+        h = float(cfg.mlp_gs_h_deriv_deg)
+
+        alpha = float(cfg.mlp_gs_ref_alpha_deg)
+        beta = float(cfg.mlp_gs_ref_beta_deg)
+        dS0 = float(cfg.mlp_gs_ref_deltaS_deg)
+        dD0 = float(cfg.mlp_gs_ref_deltaD_deg)
+
+        # dCm/d(deltaS)
+        c_sp = aero_model.query(alpha, beta, dS0 + h, dD0)
+        c_sm = aero_model.query(alpha, beta, dS0 - h, dD0)
+        cm_deltaS_ref = (float(c_sp["Cm"]) - float(c_sm["Cm"])) / (2.0 * h)
+
+        # dCl/d(deltaD)
+        c_dp = aero_model.query(alpha, beta, dS0, dD0 + h)
+        c_dm = aero_model.query(alpha, beta, dS0, dD0 - h)
+        cl_deltaD_ref = (float(c_dp["Cl"]) - float(c_dm["Cl"])) / (2.0 * h)
+
+        return cm_deltaS_ref, cl_deltaD_ref
+
+
+    cm_deltaS_ref, cl_deltaD_ref = _estimate_nominal_effectiveness_for_gain_scheduling(
+        aero_model,
+        cfg,
+    )
+
+    cfg.mlp_gs_cm_deltaS_ref = float(cm_deltaS_ref)
+    cfg.mlp_gs_cl_deltaD_ref = float(cl_deltaD_ref)
+
+    print("\nMLP gain scheduling nominal effectiveness:")
+    print(f"  dCm/d(deltaS_deg) = {cfg.mlp_gs_cm_deltaS_ref:+.6f}")
+    print(f"  dCl/d(deltaD_deg) = {cfg.mlp_gs_cl_deltaD_ref:+.6f}")
 
     ctrl_mod = importlib.import_module(CONTROLLER_MODULE)
     controller_fn = ctrl_mod.controller
