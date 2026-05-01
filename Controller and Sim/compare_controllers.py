@@ -34,31 +34,31 @@ import matplotlib.pyplot as plt
 CASES = {
     "testA": {
         "fixed": "sim_out_testA_og.csv",
-        "mlp_gs": "sim_out_testA_newmlp.csv",
+        "mlp_gs": "sim_out_testA_mlp1.csv",
     },
     "testB": {
         "fixed": "sim_out_testB_og.csv",
-        "mlp_gs": "sim_out_testB_newmlp.csv",
+        "mlp_gs": "sim_out_testB_mlp1.csv",
     },
     "testC": {
         "fixed": "sim_out_testC_og.csv",
-        "mlp_gs": "sim_out_testC_newmlp.csv",
+        "mlp_gs": "sim_out_testC_mlp1.csv",
     },
     "testD": {
         "fixed": "sim_out_testD_og.csv",
-        "mlp_gs": "sim_out_testD_newmlp.csv",
+        "mlp_gs": "sim_out_testD_mlp1.csv",
     },
     "testD2": {
         "fixed": "sim_out_testD2_og.csv",
-        "mlp_gs": "sim_out_testD2_newmlp.csv",
+        "mlp_gs": "sim_out_testD2_mlp1.csv",
     },
     "testE": {
         "fixed": "sim_out_testE_og.csv",
-        "mlp_gs": "sim_out_testE_newmlp.csv",
+        "mlp_gs": "sim_out_testE_mlp1.csv",
     },
     "testF": {
         "fixed": "sim_out_testF_og.csv",
-        "mlp_gs": "sim_out_testF_newmlp.csv",
+        "mlp_gs": "sim_out_testF_mlp1.csv",
     },
 }
 
@@ -68,7 +68,7 @@ DELTAS_MAX_DEG = 20.0
 DELTAD_MAX_DEG = 10.0
 
 # Output summary table
-METRICS_OUTPUT_CSV = "controller_comparison_metrics.csv"
+METRICS_OUTPUT_CSV = "controller_comparison_metrics_mlp1.csv"
 
 # Toggle plot groups
 MAKE_TRACKING_PLOTS = True

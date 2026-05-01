@@ -317,6 +317,20 @@ def controller(t, state, cfg):
     deltaD_out = -float(deltaD_cmd)
     deltaS_out = float(deltaS_cmd)
 
+    # ------------------------------------------------------------
+    # Initial recovery bypass
+    # ------------------------------------------------------------
+    rate_limit_start_time = float(getattr(cfg, "mlp_gs_rate_limit_start_time", 0.25))
+
+    if t < rate_limit_start_time:
+        # During the first transient, allow the controller to respond freely.
+        # This prevents delayed pitch correction from creating huge q spikes.
+        _prev_deltaS_cmd = deltaS_out
+        _prev_deltaD_cmd = deltaD_out
+        _first_call = False
+
+        return (float(deltaS_out), float(deltaD_out), throttle)
+
     if _first_call:
         _prev_deltaS_cmd = deltaS_out
         _prev_deltaD_cmd = deltaD_out

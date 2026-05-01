@@ -33,7 +33,7 @@ import aero  #aero.py
 # =============================================================================
 
 CSV_PATH = r"..\aero_autosweep.csv"
-OUTPUT_CSV = r"sim_out_testE_newmlp.csv"
+OUTPUT_CSV = r"sim_out_testF_mlp1.csv"
 
 # Controller module path (must expose controller(t, state, cfg))
 #CONTROLLER_MODULE = "controllers.heading_pitch_hold"
@@ -84,8 +84,8 @@ DELTA_D_DEG = 0.0
 # ============================================================
 
 #OG
-#HEADING_CMD_DEG = 50.0  # desired heading (deg)
-#PITCH_CMD_DEG   = 3.0   # desired pitch (deg)
+HEADING_CMD_DEG = 50.0  # desired heading (deg)
+PITCH_CMD_DEG   = 3.0   # desired pitch (deg)
 
 #A
 #HEADING_CMD_DEG = 10.0
@@ -106,8 +106,6 @@ DELTA_D_DEG = 0.0
 #D2
 #HEADING_CMD_DEG = 20.0
 #PITCH_CMD_DEG = 3.0
-
-
 #VEL0_WORLD = [15.0, 0.0, -2.0]
 #HEADING_DEG = 0.0
 #PITCH_DEG = 0.0
@@ -115,22 +113,22 @@ DELTA_D_DEG = 0.0
 #OMEGA0_BODY = [0.0, 0.0, 0.0]
 
 # E
-HEADING_CMD_DEG = 20.0
-PITCH_CMD_DEG = 0.0
+#HEADING_CMD_DEG = 20.0
+#PITCH_CMD_DEG = 0.0
 
-VEL0_WORLD = [20.0, 0.0, -3.0]
-HEADING_DEG = 0.0
-PITCH_DEG = 8.0
-ROLL_DEG = 20.0
-OMEGA0_BODY = [0.0, 0.0, 0.0]
+#VEL0_WORLD = [20.0, 0.0, -3.0]
+#HEADING_DEG = 0.0
+#PITCH_DEG = 8.0
+#ROLL_DEG = 20.0
+#OMEGA0_BODY = [0.0, 0.0, 0.0]
 
 # ============================================================
 #heading, roll gains
 # ============================================================
 
-HDG_K_PSI = 0.8  #gain for yaw *error*, converts hdg error into des. roll command
+HDG_K_PSI = 0.8  #gain for yaw *error*, converts hdg error into des. roll comman
 
-ROLL_K_PHI = 0.8    #gain for roll *error*, determines roll 'snappiness'
+ROLL_K_PHI = 0.8    #gain for roll *error*, determines roll 'snappines
 
 PHI_MAX_DEG = 30.0  #max roll limit
 
@@ -148,6 +146,17 @@ PIT_K_THETA = 3.0       # q_cmd (deg/s) per deg pitch error
 PIT_K_Q     = 1.0      # deltaS (deg) per (deg/s) pitch-rate error
 
 PIT_K_QD    = 0.0       # extra direct q damping (deg per deg/s), start 0
+
+#HDG_K_PSI = 0.20
+#ROLL_K_PHI = 0.25
+#ROLL_K_P = 0.60
+#YAW_K_R = 0.10
+
+#PIT_K_THETA = 0.35
+#PIT_K_Q = 0.08
+#PIT_K_QD = 0.15
+
+
 
 THETA_MAX_DEG  = 20.0   # clamp pitch command
 Q_CMD_MAX_DPS  = 60.0   # clamp q_cmd (deg/s)
@@ -268,10 +277,34 @@ MLP_GS_ROLL_DAMP_MULT = 2.0
 MLP_GS_PITCH_DAMP_MULT = 2.0
 MLP_GS_YAW_DAMP_MULT = 1.5
 
-MLP_GS_DELTAS_RATE_MAX_DPS = 80.0
-MLP_GS_DELTAD_RATE_MAX_DPS = 80.0
+MLP_GS_DELTAS_RATE_MAX_DPS = 1000.0
+MLP_GS_DELTAD_RATE_MAX_DPS = 500.0
 
-MLP_GS_COMMAND_SMOOTHING = 0.15
+MLP_GS_COMMAND_SMOOTHING = 1
+MLP_GS_RATE_LIMIT_START_TIME = 0.25
+
+#AHHHHHHHHHHHHHHHHHHHHHH
+# Keep pitch mostly fixed
+USE_MLP_PITCH_SCHEDULING = False
+
+# Use MLP only for lateral scheduling
+USE_MLP_ROLL_SCHEDULING = True
+
+MLP_GS_GAIN_SCALE_MIN = 0.8
+MLP_GS_GAIN_SCALE_MAX = 1.3
+
+MLP_GS_ROLL_PROP_SCALE_POWER = 0.25
+MLP_GS_ROLL_DAMP_SCALE_POWER = 1.0
+
+MLP_GS_ROLL_DAMP_MULT = 2.0
+MLP_GS_YAW_DAMP_MULT = 1.5
+
+YAW_K_R = 0.05
+
+MLP_GS_DELTAD_COMMAND_SMOOTHING = 0.4
+MLP_GS_DELTAD_RATE_MAX_DPS = 250.0
+
+MLP_GS_DELTAS_COMMAND_SMOOTHING = 1.0
 
 # =============================================================================
 # END USER INPUTS
@@ -787,6 +820,7 @@ def main():
     cfg.mlp_gs_deltaD_rate_max_dps = float(MLP_GS_DELTAD_RATE_MAX_DPS)
 
     cfg.mlp_gs_command_smoothing = float(MLP_GS_COMMAND_SMOOTHING)
+    cfg.mlp_gs_rate_limit_start_time = float(MLP_GS_RATE_LIMIT_START_TIME)
 
     # Make these available to the controller-side alpha/beta clamp
     cfg.max_alpha_deg = float(MAX_ALPHA_DEG)
