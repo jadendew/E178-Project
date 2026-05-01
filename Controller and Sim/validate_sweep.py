@@ -1,0 +1,324 @@
+#!/usr/bin/env python3
+"""
+validate_sweep.py
+-----------------
+Runs physics-based validation checks on sweep_body_rates.csv.
+Loads the CSV produced by aero_sweep_to_body_rates.py and checks that
+the aero coefficients and angular accelerations obey expected physical laws.
+
+Usage:
+    python validate_sweep.py sweep_body_rates.csv
+
+Each check prints PASS / WARN / FAIL and a short reason.
+Summary printed at end.
+"""
+
+import sys
+import numpy as np
+import pandas as pd
+
+# ── vehicle constants (must match aero_sweep_to_body_rates.py) ────────────────
+IXX, IYY, IZZ = 0.8, 0.12, 0.18
+MASS    = 4.0
+S_REF   = 0.476500
+B_REF   = 2.000000
+C_REF   = 0.196250
+RHO     = 1.225
+V_TRIM  = float(np.linalg.norm([20.0, 0.0, -3.0]))
+QBAR    = 0.5 * RHO * V_TRIM**2
+
+# stability derivative signs expected for a conventional stable airframe
+# (NED body frame: X fwd, Y right, Z down)
+EXPECTED_SIGNS = {
+    "dCm_dalpha": -1,   # static pitch stability
+    "dCl_dbeta":  -1,   # dihedral effect
+    "dCn_dbeta":  +1,   # directional stability (weathervane)
+}
+
+RESULTS = []
+
+
+def check(name, passed, warn=False, detail=""):
+    tag = "PASS" if passed and not warn else ("WARN" if warn else "FAIL")
+    RESULTS.append((tag, name))
+    sym = {"PASS": "✓", "WARN": "~", "FAIL": "✗"}[tag]
+    line = f"  [{tag}] {sym}  {name}"
+    if detail:
+        line += f"\n         {detail}"
+    print(line)
+
+
+# =============================================================================
+# load
+# =============================================================================
+
+def load(path):
+    df = pd.read_csv(path)
+    required = {"alpha_deg", "beta_deg", "deltaS_deg", "deltaD_deg",
+                "CL", "CD", "CY", "Cl", "Cm", "Cn",
+                "p_dot", "q_dot", "r_dot", "qbar"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(f"CSV missing columns: {sorted(missing)}")
+    return df
+
+
+# =============================================================================
+# helpers
+# =============================================================================
+
+def slice_zero(df, cols_zero: dict, tol=1e-6):
+    mask = np.ones(len(df), dtype=bool)
+    for col, val in cols_zero.items():
+        mask &= np.isclose(df[col].values, val, atol=tol)
+    return df[mask].copy()
+
+
+def linear_slope(x, y):
+    coeffs = np.polyfit(x, y, 1)
+    return float(coeffs[0])
+
+
+# =============================================================================
+# checks
+# =============================================================================
+
+def check_finiteness(df):
+    print("\n── Finiteness ──────────────────────────────────────")
+    for col in ["CL", "CD", "CY", "Cl", "Cm", "Cn", "p_dot", "q_dot", "r_dot"]:
+        n_bad = int(np.sum(~np.isfinite(df[col].values)))
+        check(f"No NaN/Inf in {col}", n_bad == 0,
+              detail=f"{n_bad} non-finite values" if n_bad else "")
+
+
+def check_cd_positive(df):
+    print("\n── CD sign ─────────────────────────────────────────")
+    n_neg = int(np.sum(df["CD"].values < 0))
+    check("CD >= 0 everywhere", n_neg == 0,
+          detail=f"{n_neg} negative CD values" if n_neg else "")
+
+
+def check_pitch_stability(df):
+    print("\n── Pitch stability (dCm/dα < 0) ───────────────────")
+    sub = slice_zero(df, {"beta_deg": 0, "deltaS_deg": 0, "deltaD_deg": 0})
+    sub = sub.sort_values("alpha_deg")
+    slope = linear_slope(sub["alpha_deg"].values, sub["Cm"].values)
+    passed = slope < 0
+    check("dCm/dα < 0 (statically stable)", passed,
+          detail=f"measured dCm/dα = {slope:.4f} /deg")
+
+
+def check_q_dot_decreases_with_alpha(df):
+    print("\n── q̇ vs α monotonicity ─────────────────────────────")
+    sub = slice_zero(df, {"beta_deg": 0, "deltaS_deg": 0, "deltaD_deg": 0})
+    sub = sub.sort_values("alpha_deg")
+    slope = linear_slope(sub["alpha_deg"].values, sub["q_dot"].values)
+    passed = slope < 0
+    check("q̇ decreases with α (pitch stability in rate)", passed,
+          detail=f"dq̇/dα = {slope:.3f} rad/s²/deg")
+
+
+def check_delta_s_authority(df):
+    print("\n── δS pitch authority ──────────────────────────────")
+    # at fixed mid-alpha, q_dot should increase monotonically with deltaS
+    sub = slice_zero(df, {"beta_deg": 0, "deltaD_deg": 0})
+    sub = sub[np.isclose(sub["alpha_deg"].values, 5.0, atol=1.5)].copy()
+    sub = sub.sort_values("deltaS_deg")
+
+    slope_qdot = linear_slope(sub["deltaS_deg"].values, sub["q_dot"].values)
+    slope_cm   = linear_slope(sub["deltaS_deg"].values, sub["Cm"].values)
+
+    check("dq̇/dδS > 0 (positive δS → nose up → q̇ increase)",
+          slope_qdot > 0,
+          detail=f"dq̇/dδS = {slope_qdot:.3f} rad/s²/deg")
+    check("dCm/dδS > 0 consistent with q̇",
+          slope_cm > 0,
+          detail=f"dCm/dδS = {slope_cm:.5f} /deg")
+
+
+def check_dihedral_effect(df):
+    print("\n── Dihedral / roll stability (dCl/dβ < 0) ─────────")
+    sub = slice_zero(df, {"deltaS_deg": 0, "deltaD_deg": 0})
+    sub = sub[np.isclose(sub["alpha_deg"].values, 5.0, atol=1.5)].copy()
+    sub = sub.sort_values("beta_deg")
+
+    slope_cl   = linear_slope(sub["beta_deg"].values, sub["Cl"].values)
+    slope_pdot = linear_slope(sub["beta_deg"].values, sub["p_dot"].values)
+
+    check("dCl/dβ < 0 (dihedral stability)", slope_cl < 0,
+          detail=f"dCl/dβ = {slope_cl:.5f} /deg")
+    check("dṗ/dβ < 0 consistent with dihedral", slope_pdot < 0,
+          detail=f"dṗ/dβ = {slope_pdot:.4f} rad/s²/deg")
+
+
+def check_directional_stability(df):
+    print("\n── Directional stability (dCn/dβ > 0) ─────────────")
+    sub = slice_zero(df, {"deltaS_deg": 0, "deltaD_deg": 0})
+    sub = sub[np.isclose(sub["alpha_deg"].values, 5.0, atol=1.5)].copy()
+    sub = sub.sort_values("beta_deg")
+
+    slope_cn   = linear_slope(sub["beta_deg"].values, sub["Cn"].values)
+    slope_rdot = linear_slope(sub["beta_deg"].values, sub["r_dot"].values)
+
+    check("dCn/dβ > 0 (directional stability)", slope_cn > 0,
+          detail=f"dCn/dβ = {slope_cn:.6f} /deg")
+    check("dṙ/dβ > 0 consistent with Cnβ", slope_rdot > 0,
+          detail=f"dṙ/dβ = {slope_rdot:.4f} rad/s²/deg")
+
+
+def check_delta_d_roll_authority(df):
+    print("\n── δD roll authority ────────────────────────────────")
+    sub = slice_zero(df, {"deltaS_deg": 0})
+    sub = sub[np.isclose(sub["alpha_deg"].values, 5.0, atol=1.5) &
+              np.isclose(sub["beta_deg"].values, 0.0, atol=1.0)].copy()
+    sub = sub.sort_values("deltaD_deg")
+
+    slope_pdot = linear_slope(sub["deltaD_deg"].values, sub["p_dot"].values)
+    slope_cl   = linear_slope(sub["deltaD_deg"].values, sub["Cl"].values)
+
+    check("dṗ/dδD > 0 (positive δD → right roll)", slope_pdot > 0,
+          detail=f"dṗ/dδD = {slope_pdot:.4f} rad/s²/deg")
+    check("dCl/dδD > 0 consistent with ṗ", slope_cl > 0,
+          detail=f"dCl/dδD = {slope_cl:.6f} /deg")
+
+
+def check_symmetry(df):
+    print("\n── Lateral symmetry (β=0, δD=0, δS≠0 → Cl≈0) ──────")
+    sub = slice_zero(df, {"beta_deg": 0, "deltaD_deg": 0})
+    max_cl = float(sub["Cl"].abs().max())
+    # Cl should be near zero; 1e-3 is a generous tolerance
+    passed = max_cl < 1e-3
+    warn   = not passed and max_cl < 5e-3
+    check("Cl ≈ 0 at β=0, δD=0 (lateral symmetry)", passed or warn,
+          warn=warn,
+          detail=f"max|Cl| = {max_cl:.2e}  ({'ok' if passed else 'marginal' if warn else 'too large'})")
+
+
+def check_q_dot_magnitude(df):
+    print("\n── q̇ back-of-envelope magnitude ────────────────────")
+    # expected: qbar * S * c * Cm_max / Iyy
+    sub = slice_zero(df, {"beta_deg": 0, "deltaS_deg": 0, "deltaD_deg": 0})
+    cm_max = float(sub["Cm"].abs().max())
+    q_dot_expected = QBAR * S_REF * C_REF * cm_max / IYY
+    q_dot_actual   = float(df["q_dot"].abs().max())
+
+    ratio = q_dot_actual / q_dot_expected if q_dot_expected > 0 else np.inf
+    # ratio > 3 means the sweep includes large deflection cases that push Cm higher
+    # ratio < 0.3 would suggest a scaling bug
+    passed = 0.3 < ratio < 5.0
+    warn   = not passed and 0.1 < ratio < 10.0
+    check("q̇ peak within 5x of back-of-envelope", passed or warn, warn=warn,
+          detail=(f"BofE = {q_dot_expected:.1f}, actual peak = {q_dot_actual:.1f}, "
+                  f"ratio = {ratio:.2f}"))
+
+
+def check_heatmap_trim_null(df):
+    print("\n── Heatmap: trim null exists (q̇=0 reachable) ──────")
+    sub = slice_zero(df, {"beta_deg": 0, "deltaD_deg": 0})
+    has_pos = bool(np.any(sub["q_dot"].values > 0))
+    has_neg = bool(np.any(sub["q_dot"].values < 0))
+    check("q̇ crosses zero in α×δS space (trim null reachable)",
+          has_pos and has_neg,
+          detail=f"q̇ range: [{sub['q_dot'].min():.1f}, {sub['q_dot'].max():.1f}] rad/s²")
+
+
+def check_cn_noise(df):
+    print("\n── Cn noise at zero sideslip/deflection ────────────")
+    sub = slice_zero(df, {"beta_deg": 0, "deltaS_deg": 0, "deltaD_deg": 0})
+    cn_range = float(sub["Cn"].max() - sub["Cn"].min())
+    # Cn should be near zero; flag if variation is large relative to Cm
+    cm_range  = float(sub["Cm"].max() - sub["Cm"].min())
+    rel = cn_range / cm_range if cm_range > 0 else np.inf
+    passed = rel < 1e-3
+    warn   = not passed and rel < 1e-2
+    check("Cn variation at β=0 is small relative to Cm",
+          passed or warn, warn=warn,
+          detail=f"ΔCn = {cn_range:.2e}, ΔCm = {cm_range:.4f}, ratio = {rel:.2e}")
+
+
+def check_r_dot_bias(df):
+    print("\n── ṙ bias at zero lateral inputs ───────────────────")
+    sub = slice_zero(df, {"beta_deg": 0, "deltaS_deg": 0, "deltaD_deg": 0})
+    r_dot_max = float(sub["r_dot"].abs().max())
+    # should be small; flag if it's a significant fraction of p_dot range
+    pdot_range = float(df["p_dot"].max() - df["p_dot"].min())
+    rel = r_dot_max / pdot_range if pdot_range > 0 else np.inf
+    passed = rel < 0.05
+    warn   = not passed and rel < 0.15
+    check("ṙ bias at β=δ=0 is small (<5% of ṗ range)",
+          passed or warn, warn=warn,
+          detail=f"max|ṙ| = {r_dot_max:.4f}, ṗ range = {pdot_range:.4f}, rel = {rel:.3f}")
+
+
+def check_q_dot_ordering(df):
+    print("\n── q̇ ordering w.r.t. δS ────────────────────────────")
+    # at fixed alpha, larger deltaS should give larger q_dot
+    sub = slice_zero(df, {"beta_deg": 0, "deltaD_deg": 0})
+    alphas = sorted(sub["alpha_deg"].unique())
+    violations = 0
+    for a in alphas:
+        s = sub[np.isclose(sub["alpha_deg"].values, a)].sort_values("deltaS_deg")
+        if len(s) < 2:
+            continue
+        diffs = np.diff(s["q_dot"].values)
+        violations += int(np.sum(diffs < 0))
+    total_pairs = sum(
+        max(0, len(sub[np.isclose(sub["alpha_deg"].values, a)]) - 1) for a in alphas
+    )
+    passed = violations == 0
+    warn   = not passed and violations <= max(1, total_pairs * 0.05)
+    check("q̇ increases monotonically with δS at each α",
+          passed or warn, warn=warn,
+          detail=f"{violations}/{total_pairs} ordering violations")
+
+
+# =============================================================================
+# main
+# =============================================================================
+
+def main():
+    path = sys.argv[1] if len(sys.argv) > 1 else "sweep_body_rates.csv"
+    print(f"Loading: {path}")
+    df = load(path)
+    print(f"  {len(df)} rows, {len(df.columns)} columns\n")
+
+    check_finiteness(df)
+    check_cd_positive(df)
+    check_pitch_stability(df)
+    check_q_dot_decreases_with_alpha(df)
+    check_delta_s_authority(df)
+    check_dihedral_effect(df)
+    check_directional_stability(df)
+    check_delta_d_roll_authority(df)
+    check_symmetry(df)
+    check_q_dot_magnitude(df)
+    check_heatmap_trim_null(df)
+    check_cn_noise(df)
+    check_r_dot_bias(df)
+    check_q_dot_ordering(df)
+
+    n_pass = sum(1 for t, _ in RESULTS if t == "PASS")
+    n_warn = sum(1 for t, _ in RESULTS if t == "WARN")
+    n_fail = sum(1 for t, _ in RESULTS if t == "FAIL")
+
+    print(f"\n{'='*55}")
+    print(f"  Results:  {n_pass} PASS   {n_warn} WARN   {n_fail} FAIL  "
+          f"({len(RESULTS)} total)")
+    print(f"{'='*55}")
+
+    if n_fail:
+        print("\n  FAILED checks:")
+        for tag, name in RESULTS:
+            if tag == "FAIL":
+                print(f"    ✗ {name}")
+    if n_warn:
+        print("\n  Warnings:")
+        for tag, name in RESULTS:
+            if tag == "WARN":
+                print(f"    ~ {name}")
+
+    return n_fail
+
+
+if __name__ == "__main__":
+    sys.exit(main())
