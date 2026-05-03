@@ -4,19 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Project Homepage</title>
+
   <style>
     :root {
-      --bg: #1e1e1e;
-      --black: #050505;
-      --panel: rgba(37, 37, 38, 0.84);
-      --panel-soft: rgba(45, 45, 48, 0.82);
-      --border: rgba(255, 255, 255, 0.13);
+      --bg: #050505;
+      --panel: rgba(10, 10, 10, 0.76);
+      --panel-solid: rgba(18, 18, 18, 0.94);
+      --border: rgba(255, 255, 255, 0.16);
       --text: #d4d4d4;
       --muted: #9cdcfe;
-      --subtle: #a7a7a7;
+      --subtle: #b8b8b8;
       --accent: #007acc;
       --accent-hover: #179fff;
-      --shadow: rgba(0, 0, 0, 0.45);
+      --shadow: rgba(0, 0, 0, 0.48);
+      --topbar-h: 56px;
     }
 
     * {
@@ -27,14 +28,16 @@
 
     html {
       scroll-behavior: smooth;
+      background: #000;
     }
 
     body {
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
+      background: transparent;
       color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     a {
@@ -42,22 +45,29 @@
       text-decoration: none;
     }
 
+    /* ------------------------------------------------------------------
+       Fixed background: the actual aircraft animation is the landing view.
+       ------------------------------------------------------------------ */
+
     .gif-background {
       position: fixed;
       inset: 0;
-      z-index: -2;
+      z-index: -1;
       overflow: hidden;
-      background: var(--black);
+      background: #000;
+      pointer-events: none;
     }
 
-    .gif-background img {
+    .gif-background img,
+    .gif-background video {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center center;
       display: block;
       opacity: 1;
-      filter: saturate(0.96) contrast(1.03);
-      transition: opacity 80ms linear;
+      filter: saturate(0.98) contrast(1.04);
+      transition: opacity 180ms ease;
     }
 
     .gif-background::after {
@@ -66,16 +76,16 @@
       inset: 0;
       z-index: 1;
       background:
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.04), transparent 34%, rgba(0, 0, 0, 0.12) 78%, rgba(0, 0, 0, 0.56)),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.00) 38%, rgba(0, 0, 0, 0.42)),
         linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-      background-size: auto, 36px 36px, 36px 36px;
+      background-size: auto, 40px 40px, 40px 40px;
       pointer-events: none;
     }
 
-    .page-shell {
-      min-height: 100vh;
-    }
+    /* ------------------------------------------------------------------
+       Top nav
+       ------------------------------------------------------------------ */
 
     .topbar {
       position: fixed;
@@ -83,13 +93,13 @@
       left: 0;
       right: 0;
       z-index: 100;
-      min-height: 54px;
+      min-height: var(--topbar-h);
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
       gap: 1rem;
       padding: 0.45rem 6vw;
-      background: rgba(5, 5, 5, 0.96);
+      background: rgba(5, 5, 5, 0.95);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.34);
     }
@@ -122,10 +132,6 @@
       gap: 0.1rem;
     }
 
-    .nav-item {
-      position: relative;
-    }
-
     .nav-link {
       display: inline-flex;
       align-items: center;
@@ -144,154 +150,294 @@
       outline: none;
     }
 
-    .preview {
-      position: absolute;
-      top: calc(100% + 12px);
-      left: 50%;
-      width: 280px;
-      padding: 1rem;
-      background: rgba(5, 5, 5, 0.96);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: 0 18px 50px var(--shadow);
-      opacity: 0;
-      visibility: hidden;
-      transform: translate(-50%, -6px) scale(0.98);
-      transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
-    }
+    /* ------------------------------------------------------------------
+       Scroll sections
+       ------------------------------------------------------------------ */
 
-    .nav-item:hover .preview,
-    .nav-item:focus-within .preview {
-      opacity: 1;
-      visibility: visible;
-      transform: translate(-50%, 0) scale(1);
-    }
-
-    .preview h3 {
-      color: white;
-      font-size: 0.95rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .preview p {
-      color: var(--subtle);
-      font-size: 0.85rem;
-    }
-
-    .preview-bar {
-      height: 5px;
-      width: 64px;
-      margin-bottom: 0.85rem;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--accent), transparent);
+    main {
+      position: relative;
+      z-index: 1;
     }
 
     .hero {
-      min-height: 134vh;
-      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: end;
+      padding: calc(var(--topbar-h) + 2rem) 6vw 3.5rem;
+      background: transparent;
     }
 
-    .gif-blurb {
-      position: fixed;
-      left: 2rem;
-      right: calc(min(980px, calc(100vw - 520px)) + 3rem);
-      bottom: 2rem;
-      z-index: 5;
-      width: auto;
-      min-height: 126px;
-      padding: 1rem 1.15rem;
-      text-align: left;
-      color: rgba(255, 255, 255, 0.86);
-      background: rgba(5, 5, 5, 0.66);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 18px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
-      cursor: pointer;
-      transition: opacity 80ms linear, transform 80ms linear, visibility 80ms linear, border-color 180ms ease, background 180ms ease;
+    .hero-card {
+      width: min(780px, 86vw);
+      padding: 0.85rem 1.05rem;
+      color: rgba(255, 255, 255, 0.94);
+      background: rgba(5, 5, 5, 0.46);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.46);
     }
 
-    .gif-blurb:hover,
-    .gif-blurb:focus-visible {
-      border-color: rgba(255, 255, 255, 0.36);
-      background: rgba(5, 5, 5, 0.8);
-      outline: none;
-    }
-
-    .gif-blurb h1 {
+    .hero-card h1 {
       color: white;
-      font-size: clamp(1.05rem, 2vw, 1.35rem);
-      font-weight: 680;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.25rem;
+      font-size: clamp(1.25rem, 2.35vw, 2.0rem);
+      font-weight: 760;
+      letter-spacing: -0.04em;
+      line-height: 1.08;
+      margin-bottom: 0;
     }
 
-    .gif-blurb p {
-      color: rgba(255, 255, 255, 0.72);
-      font-size: clamp(0.86rem, 1.2vw, 0.98rem);
+    .hero-card p {
+      display: none;
     }
 
-    /* Right-side stack now stretches from below the nav to the bottom of the viewport. */
-    .right-overlay {
-      position: fixed;
-      top: 74px;
-      right: 2rem;
-      bottom: 2rem;
-      z-index: 5;
-      width: min(980px, calc(100vw - 520px));
+    .section {
+      min-height: 100vh;
+      padding: calc(var(--topbar-h) + 0.9rem) 2rem 1.35rem;
       display: grid;
-      grid-template-rows: minmax(0, 1fr) auto;
+      align-items: stretch;
+    }
+
+    .section-inner {
+      width: min(1820px, 100%);
+      margin: 0 auto;
+    }
+
+    /* ------------------------------------------------------------------
+       Media comparison section:
+       Side-by-side GIFs after the first scroll.
+       They are intentionally stretched/fitted to use the full card space.
+       ------------------------------------------------------------------ */
+
+    .media-section {
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(10px);
+    }
+
+    .media-results-layout {
+      height: calc(100vh - var(--topbar-h) - 2.25rem);
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) min-content;
+      gap: 0.55rem;
+    }
+
+    .media-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 1rem;
-      transition: opacity 80ms linear, transform 80ms linear, visibility 80ms linear;
     }
 
-    .gif-preview-grid {
-      display: grid;
+
+    .combined-media-grid {
       grid-template-columns: 1fr;
-      grid-template-rows: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-      width: 100%;
-      min-height: 0;
+      grid-template-rows: minmax(0, 1fr);
     }
 
-    .gif-preview-card {
+    .combined-media-card {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      align-items: stretch;
+    }
+
+    .combined-media-visual {
+      min-height: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
+      background: rgba(245, 245, 245, 0.98);
+    }
+
+    .combined-media-card img,
+    .combined-media-card video {
+      display: block;
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      background: rgba(245, 245, 245, 0.98);
+      margin: 0 auto;
+    }
+
+    .media-card {
+      min-width: 0;
       min-height: 0;
       display: grid;
       grid-template-rows: minmax(0, 1fr) auto;
-      background: rgba(5, 5, 5, 0.74);
-      border: 1px solid rgba(255, 255, 255, 0.17);
-      border-radius: 20px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+      overflow: hidden;
+      background: rgba(5, 5, 5, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 22px;
+      box-shadow: 0 24px 90px var(--shadow);
     }
 
-    .gif-preview-card img {
+    .media-card img,
+    .media-card video {
       width: 100%;
       height: 100%;
       min-height: 0;
-      object-fit: cover;
       display: block;
-      background: rgba(30, 30, 30, 0.82);
+      background: rgba(255, 255, 255, 0.98);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .gif-preview-card span {
-      display: block;
-      padding: 0.62rem 0.75rem;
-      color: rgba(255, 255, 255, 0.72);
-      font-size: 0.82rem;
-      line-height: 1.25;
+    /*
+      Fill mode:
+      - The flight and tracking GIFs are intentionally set to fill the boxes.
+      - This can stretch the plot GIF slightly, but it avoids unused whitespace.
+      - Change object-fit to "contain" if you prefer exact aspect ratio.
+    */
+    .media-card img.fill,
+    .media-card video.fill {
+      object-fit: fill;
+      object-position: center center;
+    }
+
+    .media-card-caption {
+      padding: 0.36rem 0.7rem;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(5, 5, 5, 0.88);
+      font-size: 0.78rem;
+      line-height: 1.18;
+    }
+
+    .compact-results-box {
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: 0.38rem;
+      padding: 0.58rem 0.85rem;
+      background:
+        radial-gradient(circle at 88% 10%, rgba(0, 122, 204, 0.16), transparent 30%),
+        rgba(18, 18, 18, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 20px;
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    .compact-results-box h2 {
+      color: white;
+      font-size: clamp(1rem, 1.35vw, 1.32rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      max-width: 100%;
+    }
+
+    .compact-results-box p {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: clamp(0.72rem, 0.78vw, 0.84rem);
+      line-height: 1.28;
+      max-width: 100%;
+      margin: 0;
+    }
+
+    .compact-results-box p + p {
+      margin-top: 0.42rem;
+      padding-top: 0.42rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    /* ------------------------------------------------------------------
+       Tests / explanation section
+       ------------------------------------------------------------------ */
+
+    .tests-section {
+      background: rgba(5, 5, 5, 0.84);
+    }
+
+    .text-panel {
+      min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 1.25rem;
+      align-items: stretch;
+      padding: clamp(1.2rem, 2.5vw, 2rem);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(0, 122, 204, 0.18), transparent 32%),
+        rgba(18, 18, 18, 0.90);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 26px;
+      box-shadow: 0 28px 95px rgba(0, 0, 0, 0.5);
+    }
+
+    .text-panel-main {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .section-kicker {
+      color: var(--accent-hover);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.66rem;
+      font-weight: 760;
+      margin-bottom: 0.18rem;
+    }
+
+    .text-panel h2 {
+      color: white;
+      font-size: clamp(2rem, 4vw, 4rem);
+      letter-spacing: -0.06em;
+      line-height: 0.98;
+      margin-bottom: 1rem;
+    }
+
+    .text-panel p {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: clamp(1rem, 1.4vw, 1.16rem);
+      max-width: 70ch;
+      margin-bottom: 1rem;
+    }
+
+    .tests-notes {
+      width: 100%;
+      min-height: 100%;
+      padding: 1.25rem;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(5, 5, 5, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      font: inherit;
+      outline: none;
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .tests-notes h3 {
+      color: white;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tests-notes p {
+      margin-bottom: 0.85rem;
+    }
+
+    /* ------------------------------------------------------------------
+       Process / flowchart section
+       ------------------------------------------------------------------ */
+
+    .process-section {
+      background: rgba(0, 0, 0, 0.78);
     }
 
     .flowchart-panel {
-      width: 100%;
-      padding: 1.15rem;
-      background: rgba(5, 5, 5, 0.74);
-      border: 1px solid rgba(255, 255, 255, 0.17);
-      border-radius: 22px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+      padding: clamp(1.2rem, 2.4vw, 2rem);
+      background: rgba(18, 18, 18, 0.90);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 26px;
+      box-shadow: 0 28px 95px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .flowchart-header {
@@ -299,34 +445,35 @@
       align-items: end;
       justify-content: space-between;
       gap: 1rem;
-      margin-bottom: 0.95rem;
+      margin-bottom: 1.4rem;
     }
 
     .flowchart-header h2 {
       color: white;
-      font-size: clamp(1.05rem, 1.5vw, 1.28rem);
-      font-weight: 720;
-      letter-spacing: -0.035em;
+      font-size: clamp(2rem, 3.2vw, 3.8rem);
+      font-weight: 760;
+      letter-spacing: -0.06em;
+      line-height: 1;
     }
 
     .flowchart-header p {
       color: rgba(255, 255, 255, 0.65);
-      font-size: 0.86rem;
+      font-size: 0.95rem;
       text-align: right;
     }
 
     .flowchart {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr) 64px minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1fr) 70px minmax(0, 1fr);
       align-items: stretch;
-      gap: 0.7rem;
+      gap: 0.9rem;
     }
 
     .flow-step {
       display: block;
       background: rgba(30, 30, 30, 0.82);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 18px;
       overflow: hidden;
       transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
       min-width: 0;
@@ -343,37 +490,38 @@
 
     .flow-step img {
       width: 100%;
-      height: 106px;
+      height: 170px;
       object-fit: cover;
       display: block;
+      background: rgba(30, 30, 30, 0.82);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .flow-step-content {
-      padding: 0.78rem;
+      padding: 1rem;
     }
 
     .flow-step-page {
       display: inline-block;
       color: var(--muted);
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      font-weight: 700;
+      font-weight: 760;
       margin-bottom: 0.3rem;
     }
 
     .flow-step h3 {
       color: white;
-      font-size: 0.95rem;
+      font-size: 1.08rem;
       line-height: 1.25;
-      margin-bottom: 0.22rem;
+      margin-bottom: 0.24rem;
     }
 
     .flow-step p {
       color: var(--subtle);
-      font-size: 0.8rem;
-      line-height: 1.35;
+      font-size: 0.9rem;
+      line-height: 1.38;
     }
 
     .flow-arrow {
@@ -382,232 +530,24 @@
       align-self: center;
       height: 70px;
       color: white;
-      font-size: 3rem;
+      font-size: 3.2rem;
       font-weight: 700;
       line-height: 1;
       user-select: none;
     }
 
-    .flow-arrow span {
-      color: white;
-      background: transparent;
-      padding: 0;
-      line-height: 1;
-    }
-
-    .content-split {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-      gap: 1.2rem;
-      width: min(1180px, calc(100% - 12vw));
-      margin: 0 auto 8rem;
-      padding-top: 12vh;
-      align-items: start;
-    }
-
-    .section-card {
-      background: var(--panel);
-      backdrop-filter: blur(22px);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: clamp(1.25rem, 3vw, 2rem);
-      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
-    }
-
-    .section-kicker {
-      color: var(--accent-hover);
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      font-size: 0.74rem;
-      font-weight: 700;
-      margin-bottom: 0.6rem;
-    }
-
-    .section-card h2 {
-      color: white;
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      letter-spacing: -0.04em;
-      margin-bottom: 1.4rem;
-    }
-
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .member-card {
-      background: rgba(30, 30, 30, 0.72);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1rem;
-      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-    }
-
-    .member-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(23, 159, 255, 0.55);
-      background: rgba(34, 34, 37, 0.9);
-    }
-
-    .member-photo {
-      width: 100%;
-      aspect-ratio: 1 / 0.82;
-      object-fit: cover;
-      border-radius: 14px;
-      margin-bottom: 0.85rem;
-      background: var(--panel-soft);
-      border: 1px solid var(--border);
-    }
-
-    .member-card h3 {
-      color: white;
-      font-size: 1rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .member-role {
-      color: var(--muted);
-      font-size: 0.83rem;
-      margin-bottom: 0.55rem;
-    }
-
-    .member-card p {
-      color: var(--subtle);
-      font-size: 0.9rem;
-    }
-
-    .intro-card {
-      position: sticky;
-      top: 74px;
-      min-height: 520px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      background:
-        radial-gradient(circle at 85% 15%, rgba(0, 122, 204, 0.22), transparent 30%),
-        var(--panel);
-    }
-
-    .intro-text {
-      display: grid;
-      gap: 1rem;
-      color: var(--text);
-      font-size: 1rem;
-    }
-
-    .intro-text strong {
-      color: white;
-    }
-
-    .cta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.7rem;
-      margin-top: 2rem;
-    }
-
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 0.65rem 0.95rem;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--panel-soft);
-      color: white;
-      font-size: 0.9rem;
-      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-    }
-
-    .button.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-
-    .button:hover,
-    .button:focus-visible {
-      transform: translateY(-2px);
-      border-color: var(--accent-hover);
-      background: rgba(49, 49, 54, 0.95);
-      outline: none;
-    }
-
-    .button.primary:hover,
-    .button.primary:focus-visible {
-      background: var(--accent-hover);
-    }
-
     footer {
       position: relative;
       z-index: 2;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(255, 255, 255, 0.13);
       padding: 2rem 6vw;
       color: var(--subtle);
-      background: rgba(5, 5, 5, 0.86);
+      background: rgba(5, 5, 5, 0.92);
       backdrop-filter: blur(18px);
       font-size: 0.9rem;
     }
 
-    @media (max-width: 1180px) {
-      .right-overlay {
-        width: min(840px, calc(100vw - 500px));
-      }
-
-      .flowchart {
-        grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr) 54px minmax(0, 1fr);
-      }
-
-      .flow-step img {
-        height: 92px;
-      }
-    }
-
-    @media (max-width: 1080px) {
-      .hero {
-        min-height: 166vh;
-      }
-
-      .gif-blurb,
-      .right-overlay {
-        left: 1rem;
-        right: 1rem;
-        width: auto;
-      }
-
-      .gif-blurb {
-        bottom: 39rem;
-      }
-
-      .right-overlay {
-        top: auto;
-        bottom: 1rem;
-        grid-template-rows: auto auto;
-      }
-
-      .gif-preview-card {
-        min-height: 170px;
-      }
-    }
-
-    @media (max-width: 980px) {
-      .flowchart {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-      }
-
-      .flow-arrow {
-        width: 88px;
-        height: 52px;
-        justify-self: center;
-        transform: rotate(90deg);
-      }
-    }
-
-    @media (max-width: 900px) {
+    @media (max-width: 1050px) {
       .topbar {
         grid-template-columns: 1fr;
         justify-items: center;
@@ -626,58 +566,105 @@
         padding-bottom: 0.1rem;
       }
 
-      .preview {
-        left: 0;
-        transform: translate(0, -6px) scale(0.98);
+      :root {
+        --topbar-h: 88px;
       }
 
-      .nav-item:hover .preview,
-      .nav-item:focus-within .preview {
-        transform: translate(0, 0) scale(1);
-      }
-
-      .content-split {
+      .media-grid,
+      .text-panel,
+      .flowchart {
         grid-template-columns: 1fr;
-        padding-top: 10vh;
       }
 
-      .intro-card {
-        position: static;
+      .media-results-layout {
+        height: auto;
+        min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+      }
+
+      .media-grid {
+        grid-template-rows: minmax(240px, 1fr) minmax(240px, 1fr);
+      }
+
+      .compact-results-box {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-arrow {
+        width: 88px;
+        height: 52px;
+        justify-self: center;
+        transform: rotate(90deg);
+      }
+
+      .text-panel {
         min-height: auto;
+      }
+
+      .tests-notes {
+        min-height: 320px;
       }
     }
 
-    @media (max-width: 620px) {
-      .hero {
-        min-height: 176vh;
+    @media (max-width: 640px) {
+      .section {
+        padding-left: 1rem;
+        padding-right: 1rem;
       }
 
-      .team-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .flowchart-header {
-        align-items: start;
-        flex-direction: column;
-      }
-
-      .flowchart-header p {
-        text-align: left;
-      }
-
-      .gif-blurb {
-        bottom: 44rem;
+      .media-grid {
+        grid-template-rows: minmax(300px, 1fr) minmax(300px, 1fr);
       }
 
       .flow-step img {
-        height: 78px;
+        height: 120px;
       }
     }
+  
+    /* FINAL OVERRIDE: preserve combined GIF aspect ratio.
+       Keep the card/section height, center the GIF, and allow white bars. */
+    .combined-media-card {
+      width: 100%;
+      height: 100%;
+      display: grid !important;
+      grid-template-rows: minmax(0, 1fr) auto !important;
+      overflow: hidden;
+    }
+
+    .combined-media-visual {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: hidden;
+      background: #ffffff !important;
+    }
+
+    .combined-media-card .combined-media-visual > img,
+    .combined-media-card .combined-media-visual > video,
+    .combined-media-card img.combined-media-img,
+    .combined-media-card video.combined-media-img {
+      height: 100% !important;
+      width: auto !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: contain !important;
+      object-position: center center !important;
+      display: block !important;
+      margin: 0 auto !important;
+      background: #ffffff !important;
+    }
+
   </style>
 </head>
+
 <body>
   <div class="gif-background" aria-hidden="true">
-    <img id="heroGif" src="assets/hero.gif" alt="" />
+    <video id="heroVideo" muted playsinline loop preload="auto" poster="assets/mpc_v2_animation.gif">
+      <source src="assets/mpc_v2_animation.mp4" type="video/mp4" />
+    </video>
+    <img id="heroGifFallback" src="assets/mpc_v2_animation.gif" alt="" />
   </div>
 
   <header class="topbar">
@@ -687,206 +674,138 @@
     </a>
 
     <nav aria-label="Main navigation">
-      <div class="nav-item">
-        <a class="nav-link" href="overview.html">Overview</a>
-        <div class="preview" role="tooltip">
-          <div class="preview-bar"></div>
-          <h3>Project Overview</h3>
-          <p>A concise snapshot of the project goals, motivation, timeline, and major deliverables.</p>
-        </div>
-      </div>
-
-      <div class="nav-item">
-        <a class="nav-link" href="process.html">Process</a>
-        <div class="preview" role="tooltip">
-          <div class="preview-bar"></div>
-          <h3>Design Process</h3>
-          <p>Explore prototypes, decisions, experiments, iterations, and technical development notes.</p>
-        </div>
-      </div>
-
-      <div class="nav-item">
-        <a class="nav-link" href="results.html">Results</a>
-        <div class="preview" role="tooltip">
-          <div class="preview-bar"></div>
-          <h3>Results & Findings</h3>
-          <p>See outcomes, measurements, visuals, lessons learned, and next steps for the project.</p>
-        </div>
-      </div>
-
-      <div class="nav-item">
-        <a class="nav-link" href="contact.html">Contact</a>
-        <div class="preview" role="tooltip">
-          <div class="preview-bar"></div>
-          <h3>Contact the Team</h3>
-          <p>Reach out with questions, collaboration ideas, or requests for more project information.</p>
-        </div>
-      </div>
+      <a class="nav-link" href="overview.html">Overview</a>
+      <a class="nav-link" href="process.html">Process</a>
+      <a class="nav-link" href="results.html">Results</a>
+      <a class="nav-link" href="contact.html">Contact</a>
     </nav>
   </header>
 
-  <a class="gif-blurb" id="gifBlurb" href="overview.html" aria-label="Open Project Overview page">
-    <h1>Project Overview</h1>
-    <p>
-      This animation gives a visual summary of the project system before the written details below come into view. Click to open the overview page.
-    </p>
-  </a>
-
-  <div class="right-overlay" id="rightOverlay">
-    <div class="gif-preview-grid" aria-label="Additional project GIF previews">
-      <div class="gif-preview-card">
-        <img src="assets/preview-1.gif" alt="Placeholder GIF preview one" />
-        <span>Placeholder GIF 1</span>
-      </div>
-
-      <div class="gif-preview-card">
-        <img src="assets/preview-2.gif" alt="Placeholder GIF preview two" />
-        <span>Placeholder GIF 2</span>
-      </div>
-    </div>
-
-    <section class="flowchart-panel" aria-label="Project flowchart">
-      <div class="flowchart-header">
-        <h2>Project Flow</h2>
-        <p>Click a step to open its page.</p>
-      </div>
-
-      <div class="flowchart" aria-label="Project flowchart">
-        <a class="flow-step" href="sparse-data-input.html">
-          <img src="assets/flow-input.jpg" alt="Sparse data input illustration" />
-          <div class="flow-step-content">
-            <span class="flow-step-page">Sparse Data</span>
-            <h3>Sparse Data Input</h3>
-            <p>Initial data sources, constraints, and low-density observations.</p>
-          </div>
-        </a>
-
-        <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
-
-        <a class="flow-step" href="process.html">
-          <img src="assets/flow-prediction.jpg" alt="Surrogate data prediction illustration" />
-          <div class="flow-step-content">
-            <span class="flow-step-page">Process</span>
-            <h3>Surrogate Data Prediction</h3>
-            <p>Modeling, interpolation, and prediction of surrogate datasets.</p>
-          </div>
-        </a>
-
-        <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
-
-        <a class="flow-step" href="results.html">
-          <img src="assets/flow-application.jpg" alt="Surrogate data application illustration" />
-          <div class="flow-step-content">
-            <span class="flow-step-page">Results</span>
-            <h3>Surrogate Data Application</h3>
-            <p>Use the predicted data in downstream analysis and project outcomes.</p>
-          </div>
-        </a>
+  <main id="top">
+    <section class="hero" aria-label="MPC aircraft animation hero">
+      <div class="hero-card">
+        <h1>Surrogate-Based MPC Control of a Fixed-Thrust Flying Wing</h1>
       </div>
     </section>
-  </div>
 
-  <div class="page-shell">
-    <main id="top">
-      <section class="hero" aria-label="Project animation hero"></section>
-
-      <section id="details" class="content-split" aria-label="Team and project introduction">
-        <section class="section-card" aria-labelledby="team-heading">
-          <div class="section-kicker">People</div>
-          <h2 id="team-heading">The Team</h2>
-
-          <div class="team-grid">
-            <article class="member-card">
-              <img class="member-photo" src="assets/member-1.jpg" alt="Portrait of Team Member One" />
-              <h3>Team Member One</h3>
-              <div class="member-role">Role / Specialty</div>
-              <p>Short blurb about this member’s contribution, interests, or project responsibilities.</p>
+    <section id="tracking" class="section media-section" aria-label="Flight, tracking, and results explanation">
+      <div class="section-inner">
+        <div class="media-results-layout">
+          <div class="media-grid combined-media-grid">
+            <article class="media-card combined-media-card">
+              <div class="combined-media-visual">
+                <img
+                  id="combinedTrackingGif"
+                  class="combined-media-img"
+                  src="assets/mpc_v2_csv_synced_flight_tracking.gif"
+                  alt="Synchronized MPC flight animation and attitude tracking"
+                />
+              </div>
+              <div class="media-card-caption">Synchronized MPC Flight Animation and Attitude Tracking</div>
             </article>
+          </div>
 
-            <article class="member-card">
-              <img class="member-photo" src="assets/member-2.jpg" alt="Portrait of Team Member Two" />
-              <h3>Team Member Two</h3>
-              <div class="member-role">Role / Specialty</div>
-              <p>Short blurb about this member’s contribution, interests, or project responsibilities.</p>
-            </article>
+          <div class="compact-results-box" aria-label="Short results explanation">
+            <div>
+              <div class="section-kicker">Overview</div>
+              <h2>Fancy Result: Surrogate Model Based Control</h2>
+            </div>
 
-            <article class="member-card">
-              <img class="member-photo" src="assets/member-3.jpg" alt="Portrait of Team Member Three" />
-              <h3>Team Member Three</h3>
-              <div class="member-role">Role / Specialty</div>
-              <p>Short blurb about this member’s contribution, interests, or project responsibilities.</p>
-            </article>
+            <p>
+              Surrogate modeling in the field of computational fluid dynamics is the process of replacing costly CFD simulation with data driven 
+              ML models to predict aerodynamic data. This practice has become increasining popular in both reserach and industry in recent years for 
+              applications where large amounts of data are needed and larger error bands are acceptable, suh as aircraft and rocket control. Given that our
+              group members are all planning on working in the aerospace industry we wanted to use the knowledge we learned in this E178 to create a surrogate 
+              model and apply it to an aircraft control problem.
+            </p>
 
-            <article class="member-card">
-              <img class="member-photo" src="assets/member-4.jpg" alt="Portrait of Team Member Four" />
-              <h3>Team Member Four</h3>
-              <div class="member-role">Role / Specialty</div>
-              <p>Short blurb about this member’s contribution, interests, or project responsibilities.</p>
-            </article>
+            <p>
+              To create this surrogate model we utilized multiple regression framworks to train a predictor that can take in 4 positional and control surface 
+              angles and map those values to all 6 aerodynamic force and moment coefficents acting on the aircraft anywhere in 3D space. We trained this model on sparce 
+              aerodynamic data generated in NASA made panel method solver OpenVSP for a flying wing aircraft. We then used this data to create three different 
+              regression frameworks. These frameworks included a Multi-Output Linear Regression, Gradient Boosted Trees algorithm, and a Multi-Layer Perceptron 
+              neural network (MLP), the best of which we used for our controller. We then took this model and used it to predict the control inputs required to reach a certain heading 
+              in 3D space within a Model Predictive Control (MPC) framework. Each step of this process is detailed in the diagram below, click on the steps that interest 
+              you to learn more! 
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="process-flow" class="section process-section" aria-label="Project process flowchart">
+      <div class="section-inner">
+        <section class="flowchart-panel" aria-label="Project flowchart">
+          <div class="flowchart-header">
+            <h2>Project Flow</h2>
+            <p>Click a step to open its page.</p>
+          </div>
+
+          <div class="flowchart" aria-label="Project flowchart">
+            <a class="flow-step" href="sparse-data-input.html">
+              <img src="assets/flow-input.jpg" alt="Sparse data input illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Sparse Data</span>
+                <h3>Sparse Data Input</h3>
+                <p>Initial data sources, constraints, and low-density observations.</p>
+              </div>
+            </a>
+
+            <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
+
+            <a class="flow-step" href="process.html">
+              <img src="assets/flow-prediction.jpg" alt="Surrogate data prediction illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Process</span>
+                <h3>Surrogate Data Prediction</h3>
+                <p>Modeling, interpolation, and prediction of surrogate datasets.</p>
+              </div>
+            </a>
+
+            <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
+
+            <a class="flow-step" href="results.html">
+              <img src="assets/flow-application.jpg" alt="Surrogate data application illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Results</span>
+                <h3>Surrogate Data Application</h3>
+                <p>Use the predicted data in downstream analysis and project outcomes.</p>
+              </div>
+            </a>
           </div>
         </section>
+      </div>
+    </section>
+  </main>
 
-        <aside class="section-card intro-card" aria-labelledby="intro-heading">
-          <div>
-            <div class="section-kicker">Introduction</div>
-            <h2 id="intro-heading">Project Introduction</h2>
-
-            <div class="intro-text">
-              <p>
-                <strong>Replace this with your project intro.</strong> This section is designed as a clean text box for explaining the project’s motivation, context, and central problem.
-              </p>
-              <p>
-                Keep this paragraph focused on what the project does and why it matters. A minimalist homepage works best when the introduction is concise, visual, and easy to scan.
-              </p>
-              <p>
-                You can also use this space to mention tools, methods, materials, research questions, or the final outcome.
-              </p>
-            </div>
-          </div>
-
-          <div class="cta-row">
-            <a class="button primary" href="overview.html">View Overview</a>
-            <a class="button" href="results.html">See Results</a>
-          </div>
-        </aside>
-      </section>
-    </main>
-
-    <footer>
-      <p>© 2026 Project Name. Built by the team.</p>
-    </footer>
-  </div>
+  <footer>
+    <p>© 2026 Project Name. Built by the team.</p>
+  </footer>
 
   <script>
+    const heroVideo = document.getElementById("heroVideo");
     const heroGif = document.getElementById("heroGif");
-    const gifBlurb = document.getElementById("gifBlurb");
-    const rightOverlay = document.getElementById("rightOverlay");
-    const details = document.getElementById("details");
+    const heroGifFallback = document.getElementById("heroGifFallback");
 
-    function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    }
-
-    function updateScrollEffects() {
+    function updateBackgroundFade() {
       const y = window.scrollY || window.pageYOffset;
-      const detailsStart = details.offsetTop - window.innerHeight * 0.85;
-      const detailsProgress = clamp((y - detailsStart) / (window.innerHeight * 0.72), 0, 1);
-      const overlayProgress = clamp(y / (window.innerHeight * 0.42), 0, 1);
+      const fadeStart = window.innerHeight * 0.55;
+      const fadeEnd = window.innerHeight * 1.10;
 
-      heroGif.style.opacity = String(1 - detailsProgress * 0.68);
+      let opacity = 1.0;
+      if (y > fadeStart) {
+        const p = Math.min(1, (y - fadeStart) / Math.max(1, fadeEnd - fadeStart));
+        opacity = 1.0 - 0.55 * p;
+      }
 
-      gifBlurb.style.opacity = String(1 - overlayProgress);
-      gifBlurb.style.transform = `translateY(${-140 * overlayProgress}px)`;
-      gifBlurb.style.visibility = overlayProgress >= 0.98 ? "hidden" : "visible";
-
-      rightOverlay.style.opacity = String(1 - overlayProgress);
-      rightOverlay.style.transform = `translateY(${-140 * overlayProgress}px)`;
-      rightOverlay.style.visibility = overlayProgress >= 0.98 ? "hidden" : "visible";
+      if (heroVideo) heroVideo.style.opacity = String(opacity);
+      if (heroGif) heroGif.style.opacity = String(opacity);
+      if (heroGifFallback) heroGifFallback.style.opacity = String(opacity);
     }
 
-    updateScrollEffects();
-    window.addEventListener("scroll", updateScrollEffects, { passive: true });
-    window.addEventListener("resize", updateScrollEffects);
+    window.addEventListener("load", updateBackgroundFade);
+    window.addEventListener("scroll", updateBackgroundFade, { passive: true });
+    window.addEventListener("resize", updateBackgroundFade);
   </script>
 </body>
 </html>
