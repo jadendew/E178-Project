@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Homepage</title>
+  <style>
+    :root {
+      --bg: #1e1e1e;
+      --black: #050505;
+      --panel: rgba(37, 37, 38, 0.84);
+      --panel-soft: rgba(45, 45, 48, 0.82);
+      --border: rgba(255, 255, 255, 0.13);
+      --text: #d4d4d4;
+      --muted: #9cdcfe;
+      --subtle: #a7a7a7;
+      --accent: #007acc;
+      --accent-hover: #179fff;
+      --shadow: rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .gif-background {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
+      background: var(--black);
+    }
+
+    .gif-background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 1;
+      filter: saturate(0.96) contrast(1.03);
+      transition: opacity 80ms linear;
+    }
+
+    .gif-background::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.04), transparent 34%, rgba(0, 0, 0, 0.12) 78%, rgba(0, 0, 0, 0.56)),
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+      background-size: auto, 36px 36px, 36px 36px;
+      pointer-events: none;
+    }
+
+    .page-shell {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      min-height: 54px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.45rem 6vw;
+      background: rgba(5, 5, 5, 0.96);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.34);
+    }
+
+    .brand {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.58rem;
+      color: white;
+      font-size: 0.88rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      opacity: 0.92;
+    }
+
+    .brand-mark {
+      width: 9px;
+      height: 9px;
+      background: var(--accent);
+      border-radius: 2px;
+      box-shadow: 0 0 14px rgba(0, 122, 204, 0.85);
+    }
+
+    nav {
+      justify-self: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.1rem;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.46rem 0.82rem;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.84rem;
+      opacity: 0.9;
+      transition: background 180ms ease, opacity 180ms ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+      background: rgba(255, 255, 255, 0.09);
+      opacity: 1;
+      outline: none;
+    }
+
+    .preview {
+      position: absolute;
+      top: calc(100% + 12px);
+      left: 50%;
+      width: 280px;
+      padding: 1rem;
+      background: rgba(5, 5, 5, 0.96);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 18px 50px var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translate(-50%, -6px) scale(0.98);
+      transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+    }
+
+    .nav-item:hover .preview,
+    .nav-item:focus-within .preview {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0) scale(1);
+    }
+
+    .preview h3 {
+      color: white;
+      font-size: 0.95rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .preview p {
+      color: var(--subtle);
+      font-size: 0.85rem;
+    }
+
+    .preview-bar {
+      height: 5px;
+      width: 64px;
+      margin-bottom: 0.85rem;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .hero {
+      min-height: 134vh;
+      position: relative;
+    }
+
+    .gif-blurb {
+      position: fixed;
+      left: 2rem;
+      right: calc(min(980px, calc(100vw - 520px)) + 3rem);
+      bottom: 2rem;
+      z-index: 5;
+      width: auto;
+      min-height: 126px;
+      padding: 1rem 1.15rem;
+      text-align: left;
+      color: rgba(255, 255, 255, 0.86);
+      background: rgba(5, 5, 5, 0.66);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 18px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      cursor: pointer;
+      transition: opacity 80ms linear, transform 80ms linear, visibility 80ms linear, border-color 180ms ease, background 180ms ease;
+    }
+
+    .gif-blurb:hover,
+    .gif-blurb:focus-visible {
+      border-color: rgba(255, 255, 255, 0.36);
+      background: rgba(5, 5, 5, 0.8);
+      outline: none;
+    }
+
+    .gif-blurb h1 {
+      color: white;
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+      font-weight: 680;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.25rem;
+    }
+
+    .gif-blurb p {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: clamp(0.86rem, 1.2vw, 0.98rem);
+    }
+
+    /* Right-side stack now stretches from below the nav to the bottom of the viewport. */
+    .right-overlay {
+      position: fixed;
+      top: 74px;
+      right: 2rem;
+      bottom: 2rem;
+      z-index: 5;
+      width: min(980px, calc(100vw - 520px));
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 1rem;
+      transition: opacity 80ms linear, transform 80ms linear, visibility 80ms linear;
+    }
+
+    .gif-preview-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      width: 100%;
+      min-height: 0;
+    }
+
+    .gif-preview-card {
+      overflow: hidden;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      background: rgba(5, 5, 5, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.17);
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    .gif-preview-card img {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      object-fit: cover;
+      display: block;
+      background: rgba(30, 30, 30, 0.82);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .gif-preview-card span {
+      display: block;
+      padding: 0.62rem 0.75rem;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.82rem;
+      line-height: 1.25;
+    }
+
+    .flowchart-panel {
+      width: 100%;
+      padding: 1.15rem;
+      background: rgba(5, 5, 5, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.17);
+      border-radius: 22px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    .flowchart-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.95rem;
+    }
+
+    .flowchart-header h2 {
+      color: white;
+      font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+      font-weight: 720;
+      letter-spacing: -0.035em;
+    }
+
+    .flowchart-header p {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 0.86rem;
+      text-align: right;
+    }
+
+    .flowchart {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr) 64px minmax(0, 1fr);
+      align-items: stretch;
+      gap: 0.7rem;
+    }
+
+    .flow-step {
+      display: block;
+      background: rgba(30, 30, 30, 0.82);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .flow-step:hover,
+    .flow-step:focus-visible {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.38);
+      background: rgba(36, 36, 40, 0.95);
+      outline: none;
+    }
+
+    .flow-step img {
+      width: 100%;
+      height: 106px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .flow-step-content {
+      padding: 0.78rem;
+    }
+
+    .flow-step-page {
+      display: inline-block;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .flow-step h3 {
+      color: white;
+      font-size: 0.95rem;
+      line-height: 1.25;
+      margin-bottom: 0.22rem;
+    }
+
+    .flow-step p {
+      color: var(--subtle);
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+
+    .flow-arrow {
+      display: grid;
+      place-items: center;
+      align-self: center;
+      height: 70px;
+      color: white;
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .flow-arrow span {
+      color: white;
+      background: transparent;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .content-split {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 1.2rem;
+      width: min(1180px, calc(100% - 12vw));
+      margin: 0 auto 8rem;
+      padding-top: 12vh;
+      align-items: start;
+    }
+
+    .section-card {
+      background: var(--panel);
+      backdrop-filter: blur(22px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+    }
+
+    .section-kicker {
+      color: var(--accent-hover);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .section-card h2 {
+      color: white;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      letter-spacing: -0.04em;
+      margin-bottom: 1.4rem;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .member-card {
+      background: rgba(30, 30, 30, 0.72);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1rem;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .member-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(23, 159, 255, 0.55);
+      background: rgba(34, 34, 37, 0.9);
+    }
+
+    .member-photo {
+      width: 100%;
+      aspect-ratio: 1 / 0.82;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-bottom: 0.85rem;
+      background: var(--panel-soft);
+      border: 1px solid var(--border);
+    }
+
+    .member-card h3 {
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .member-role {
+      color: var(--muted);
+      font-size: 0.83rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .member-card p {
+      color: var(--subtle);
+      font-size: 0.9rem;
+    }
+
+    .intro-card {
+      position: sticky;
+      top: 74px;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(0, 122, 204, 0.22), transparent 30%),
+        var(--panel);
+    }
+
+    .intro-text {
+      display: grid;
+      gap: 1rem;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .intro-text strong {
+      color: white;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 2rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0.65rem 0.95rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel-soft);
+      color: white;
+      font-size: 0.9rem;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--accent-hover);
+      background: rgba(49, 49, 54, 0.95);
+      outline: none;
+    }
+
+    .button.primary:hover,
+    .button.primary:focus-visible {
+      background: var(--accent-hover);
+    }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid var(--border);
+      padding: 2rem 6vw;
+      color: var(--subtle);
+      background: rgba(5, 5, 5, 0.86);
+      backdrop-filter: blur(18px);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1180px) {
+      .right-overlay {
+        width: min(840px, calc(100vw - 500px));
+      }
+
+      .flowchart {
+        grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr) 54px minmax(0, 1fr);
+      }
+
+      .flow-step img {
+        height: 92px;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .hero {
+        min-height: 166vh;
+      }
+
+      .gif-blurb,
+      .right-overlay {
+        left: 1rem;
+        right: 1rem;
+        width: auto;
+      }
+
+      .gif-blurb {
+        bottom: 39rem;
+      }
+
+      .right-overlay {
+        top: auto;
+        bottom: 1rem;
+        grid-template-rows: auto auto;
+      }
+
+      .gif-preview-card {
+        min-height: 170px;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .flowchart {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .flow-arrow {
+        width: 88px;
+        height: 52px;
+        justify-self: center;
+        transform: rotate(90deg);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 0.3rem;
+        padding: 0.55rem 4vw;
+      }
+
+      .brand {
+        justify-self: center;
+      }
+
+      nav {
+        width: 100%;
+        overflow-x: auto;
+        justify-content: center;
+        padding-bottom: 0.1rem;
+      }
+
+      .preview {
+        left: 0;
+        transform: translate(0, -6px) scale(0.98);
+      }
+
+      .nav-item:hover .preview,
+      .nav-item:focus-within .preview {
+        transform: translate(0, 0) scale(1);
+      }
+
+      .content-split {
+        grid-template-columns: 1fr;
+        padding-top: 10vh;
+      }
+
+      .intro-card {
+        position: static;
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero {
+        min-height: 176vh;
+      }
+
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flowchart-header {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .flowchart-header p {
+        text-align: left;
+      }
+
+      .gif-blurb {
+        bottom: 44rem;
+      }
+
+      .flow-step img {
+        height: 78px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="gif-background" aria-hidden="true">
+    <img id="heroGif" src="assets/hero.gif" alt="" />
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Project homepage">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>Project Name</span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <div class="nav-item">
+        <a class="nav-link" href="overview.html">Overview</a>
+        <div class="preview" role="tooltip">
+          <div class="preview-bar"></div>
+          <h3>Project Overview</h3>
+          <p>A concise snapshot of the project goals, motivation, timeline, and major deliverables.</p>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <a class="nav-link" href="process.html">Process</a>
+        <div class="preview" role="tooltip">
+          <div class="preview-bar"></div>
+          <h3>Design Process</h3>
+          <p>Explore prototypes, decisions, experiments, iterations, and technical development notes.</p>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <a class="nav-link" href="results.html">Results</a>
+        <div class="preview" role="tooltip">
+          <div class="preview-bar"></div>
+          <h3>Results & Findings</h3>
+          <p>See outcomes, measurements, visuals, lessons learned, and next steps for the project.</p>
+        </div>
+      </div>
+
+      <div class="nav-item">
+        <a class="nav-link" href="contact.html">Contact</a>
+        <div class="preview" role="tooltip">
+          <div class="preview-bar"></div>
+          <h3>Contact the Team</h3>
+          <p>Reach out with questions, collaboration ideas, or requests for more project information.</p>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <a class="gif-blurb" id="gifBlurb" href="overview.html" aria-label="Open Project Overview page">
+    <h1>Project Overview</h1>
+    <p>
+      This animation gives a visual summary of the project system before the written details below come into view. Click to open the overview page.
+    </p>
+  </a>
+
+  <div class="right-overlay" id="rightOverlay">
+    <div class="gif-preview-grid" aria-label="Additional project GIF previews">
+      <div class="gif-preview-card">
+        <img src="assets/preview-1.gif" alt="Placeholder GIF preview one" />
+        <span>Placeholder GIF 1</span>
+      </div>
+
+      <div class="gif-preview-card">
+        <img src="assets/preview-2.gif" alt="Placeholder GIF preview two" />
+        <span>Placeholder GIF 2</span>
+      </div>
+    </div>
+
+    <section class="flowchart-panel" aria-label="Project flowchart">
+      <div class="flowchart-header">
+        <h2>Project Flow</h2>
+        <p>Click a step to open its page.</p>
+      </div>
+
+      <div class="flowchart" aria-label="Project flowchart">
+        <a class="flow-step" href="sparse-data-input.html">
+          <img src="assets/flow-input.jpg" alt="Sparse data input illustration" />
+          <div class="flow-step-content">
+            <span class="flow-step-page">Sparse Data</span>
+            <h3>Sparse Data Input</h3>
+            <p>Initial data sources, constraints, and low-density observations.</p>
+          </div>
+        </a>
+
+        <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
+
+        <a class="flow-step" href="process.html">
+          <img src="assets/flow-prediction.jpg" alt="Surrogate data prediction illustration" />
+          <div class="flow-step-content">
+            <span class="flow-step-page">Process</span>
+            <h3>Surrogate Data Prediction</h3>
+            <p>Modeling, interpolation, and prediction of surrogate datasets.</p>
+          </div>
+        </a>
+
+        <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
+
+        <a class="flow-step" href="results.html">
+          <img src="assets/flow-application.jpg" alt="Surrogate data application illustration" />
+          <div class="flow-step-content">
+            <span class="flow-step-page">Results</span>
+            <h3>Surrogate Data Application</h3>
+            <p>Use the predicted data in downstream analysis and project outcomes.</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <div class="page-shell">
+    <main id="top">
+      <section class="hero" aria-label="Project animation hero"></section>
+
+      <section id="details" class="content-split" aria-label="Team and project introduction">
+        <section class="section-card" aria-labelledby="team-heading">
+          <div class="section-kicker">People</div>
+          <h2 id="team-heading">The Team</h2>
+
+          <div class="team-grid">
+            <article class="member-card">
+              <img class="member-photo" src="assets/member-1.jpg" alt="Portrait of Team Member One" />
+              <h3>Team Member One</h3>
+              <div class="member-role">Role / Specialty</div>
+              <p>Short blurb about this member’s contribution, interests, or project responsibilities.</p>
+            </article>
+
+            <article class="member-card">
+              <img class="member-photo" src="assets/member-2.jpg" alt="Portrait of Team Member Two" />
+              <h3>Team Member Two</h3>
+              <div class="member-role">Role / Specialty</div>
+              <p>Short blurb about this member’s contribution, interests, or project responsibilities.</p>
+            </article>
+
+            <article class="member-card">
+              <img class="member-photo" src="assets/member-3.jpg" alt="Portrait of Team Member Three" />
+              <h3>Team Member Three</h3>
+              <div class="member-role">Role / Specialty</div>
+              <p>Short blurb about this member’s contribution, interests, or project responsibilities.</p>
+            </article>
+
+            <article class="member-card">
+              <img class="member-photo" src="assets/member-4.jpg" alt="Portrait of Team Member Four" />
+              <h3>Team Member Four</h3>
+              <div class="member-role">Role / Specialty</div>
+              <p>Short blurb about this member’s contribution, interests, or project responsibilities.</p>
+            </article>
+          </div>
+        </section>
+
+        <aside class="section-card intro-card" aria-labelledby="intro-heading">
+          <div>
+            <div class="section-kicker">Introduction</div>
+            <h2 id="intro-heading">Project Introduction</h2>
+
+            <div class="intro-text">
+              <p>
+                <strong>Replace this with your project intro.</strong> This section is designed as a clean text box for explaining the project’s motivation, context, and central problem.
+              </p>
+              <p>
+                Keep this paragraph focused on what the project does and why it matters. A minimalist homepage works best when the introduction is concise, visual, and easy to scan.
+              </p>
+              <p>
+                You can also use this space to mention tools, methods, materials, research questions, or the final outcome.
+              </p>
+            </div>
+          </div>
+
+          <div class="cta-row">
+            <a class="button primary" href="overview.html">View Overview</a>
+            <a class="button" href="results.html">See Results</a>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2026 Project Name. Built by the team.</p>
+    </footer>
+  </div>
+
+  <script>
+    const heroGif = document.getElementById("heroGif");
+    const gifBlurb = document.getElementById("gifBlurb");
+    const rightOverlay = document.getElementById("rightOverlay");
+    const details = document.getElementById("details");
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function updateScrollEffects() {
+      const y = window.scrollY || window.pageYOffset;
+      const detailsStart = details.offsetTop - window.innerHeight * 0.85;
+      const detailsProgress = clamp((y - detailsStart) / (window.innerHeight * 0.72), 0, 1);
+      const overlayProgress = clamp(y / (window.innerHeight * 0.42), 0, 1);
+
+      heroGif.style.opacity = String(1 - detailsProgress * 0.68);
+
+      gifBlurb.style.opacity = String(1 - overlayProgress);
+      gifBlurb.style.transform = `translateY(${-140 * overlayProgress}px)`;
+      gifBlurb.style.visibility = overlayProgress >= 0.98 ? "hidden" : "visible";
+
+      rightOverlay.style.opacity = String(1 - overlayProgress);
+      rightOverlay.style.transform = `translateY(${-140 * overlayProgress}px)`;
+      rightOverlay.style.visibility = overlayProgress >= 0.98 ? "hidden" : "visible";
+    }
+
+    updateScrollEffects();
+    window.addEventListener("scroll", updateScrollEffects, { passive: true });
+    window.addEventListener("resize", updateScrollEffects);
+  </script>
+</body>
+</html>
