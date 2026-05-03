@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Homepage</title>
+
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: rgba(10, 10, 10, 0.76);
+      --panel-solid: rgba(18, 18, 18, 0.94);
+      --border: rgba(255, 255, 255, 0.16);
+      --text: #d4d4d4;
+      --muted: #9cdcfe;
+      --subtle: #b8b8b8;
+      --accent: #007acc;
+      --accent-hover: #179fff;
+      --shadow: rgba(0, 0, 0, 0.48);
+      --topbar-h: 56px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ------------------------------------------------------------------
+       Fixed background: the actual aircraft animation is the landing view.
+       ------------------------------------------------------------------ */
+
+    .gif-background {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .gif-background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+      opacity: 1;
+      filter: saturate(0.98) contrast(1.04);
+      transition: opacity 180ms ease;
+    }
+
+    .gif-background::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.02) 38%, rgba(0, 0, 0, 0.58)),
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+      background-size: auto, 40px 40px, 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ------------------------------------------------------------------
+       Top nav
+       ------------------------------------------------------------------ */
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      min-height: var(--topbar-h);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.45rem 6vw;
+      background: rgba(5, 5, 5, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.34);
+    }
+
+    .brand {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.58rem;
+      color: white;
+      font-size: 0.88rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      opacity: 0.92;
+    }
+
+    .brand-mark {
+      width: 9px;
+      height: 9px;
+      background: var(--accent);
+      border-radius: 2px;
+      box-shadow: 0 0 14px rgba(0, 122, 204, 0.85);
+    }
+
+    nav {
+      justify-self: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.1rem;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.46rem 0.82rem;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.84rem;
+      opacity: 0.9;
+      transition: background 180ms ease, opacity 180ms ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+      background: rgba(255, 255, 255, 0.09);
+      opacity: 1;
+      outline: none;
+    }
+
+    /* ------------------------------------------------------------------
+       Scroll sections
+       ------------------------------------------------------------------ */
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: end;
+      padding: calc(var(--topbar-h) + 2rem) 6vw 3.5rem;
+    }
+
+    .hero-card {
+      width: min(650px, 92vw);
+      padding: 1.25rem 1.4rem;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(5, 5, 5, 0.46);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-card h1 {
+      color: white;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 750;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.35rem;
+    }
+
+    .hero-card p {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+      max-width: 62ch;
+    }
+
+    .section {
+      min-height: 100vh;
+      padding: calc(var(--topbar-h) + 1.35rem) 2rem 2rem;
+      display: grid;
+      align-items: stretch;
+    }
+
+    .section-inner {
+      width: min(1820px, 100%);
+      margin: 0 auto;
+    }
+
+    /* ------------------------------------------------------------------
+       Media comparison section:
+       Side-by-side GIFs after the first scroll.
+       They are intentionally stretched/fitted to use the full card space.
+       ------------------------------------------------------------------ */
+
+    .media-section {
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(10px);
+    }
+
+    .media-results-layout {
+      height: calc(100vh - var(--topbar-h) - 3.35rem);
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 0.85rem;
+    }
+
+    .media-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .media-card {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      overflow: hidden;
+      background: rgba(5, 5, 5, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 22px;
+      box-shadow: 0 24px 90px var(--shadow);
+    }
+
+    .media-card img {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: block;
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /*
+      Fill mode:
+      - The flight and tracking GIFs are intentionally set to fill the boxes.
+      - This can stretch the plot GIF slightly, but it avoids unused whitespace.
+      - Change object-fit to "contain" if you prefer exact aspect ratio.
+    */
+    .media-card img.fill {
+      object-fit: fill;
+      object-position: center center;
+    }
+
+    .media-card-caption {
+      padding: 0.5rem 0.8rem;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(5, 5, 5, 0.88);
+      font-size: 0.84rem;
+      line-height: 1.25;
+    }
+
+    .compact-results-box {
+      display: grid;
+      grid-template-columns: minmax(210px, 0.32fr) minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+      gap: 1rem;
+      padding: 0.9rem 1rem;
+      background:
+        radial-gradient(circle at 88% 10%, rgba(0, 122, 204, 0.16), transparent 30%),
+        rgba(18, 18, 18, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 20px;
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    .compact-results-box h2 {
+      color: white;
+      font-size: clamp(1.15rem, 1.8vw, 1.8rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .compact-results-box p {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: clamp(0.82rem, 0.95vw, 0.98rem);
+      line-height: 1.45;
+    }
+
+    /* ------------------------------------------------------------------
+       Tests / explanation section
+       ------------------------------------------------------------------ */
+
+    .tests-section {
+      background: rgba(5, 5, 5, 0.84);
+    }
+
+    .text-panel {
+      min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 1.25rem;
+      align-items: stretch;
+      padding: clamp(1.2rem, 2.5vw, 2rem);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(0, 122, 204, 0.18), transparent 32%),
+        rgba(18, 18, 18, 0.90);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 26px;
+      box-shadow: 0 28px 95px rgba(0, 0, 0, 0.5);
+    }
+
+    .text-panel-main {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .section-kicker {
+      color: var(--accent-hover);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      font-weight: 760;
+      margin-bottom: 0.65rem;
+    }
+
+    .text-panel h2 {
+      color: white;
+      font-size: clamp(2rem, 4vw, 4rem);
+      letter-spacing: -0.06em;
+      line-height: 0.98;
+      margin-bottom: 1rem;
+    }
+
+    .text-panel p {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: clamp(1rem, 1.4vw, 1.16rem);
+      max-width: 70ch;
+      margin-bottom: 1rem;
+    }
+
+    .tests-notes {
+      width: 100%;
+      min-height: 100%;
+      padding: 1.25rem;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(5, 5, 5, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      font: inherit;
+      outline: none;
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .tests-notes h3 {
+      color: white;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tests-notes p {
+      margin-bottom: 0.85rem;
+    }
+
+    /* ------------------------------------------------------------------
+       Process / flowchart section
+       ------------------------------------------------------------------ */
+
+    .process-section {
+      background: rgba(0, 0, 0, 0.78);
+    }
+
+    .flowchart-panel {
+      min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+      padding: clamp(1.2rem, 2.4vw, 2rem);
+      background: rgba(18, 18, 18, 0.90);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 26px;
+      box-shadow: 0 28px 95px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .flowchart-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .flowchart-header h2 {
+      color: white;
+      font-size: clamp(2rem, 3.2vw, 3.8rem);
+      font-weight: 760;
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .flowchart-header p {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 0.95rem;
+      text-align: right;
+    }
+
+    .flowchart {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1fr) 70px minmax(0, 1fr);
+      align-items: stretch;
+      gap: 0.9rem;
+    }
+
+    .flow-step {
+      display: block;
+      background: rgba(30, 30, 30, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .flow-step:hover,
+    .flow-step:focus-visible {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.38);
+      background: rgba(36, 36, 40, 0.95);
+      outline: none;
+    }
+
+    .flow-step img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      display: block;
+      background: rgba(30, 30, 30, 0.82);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .flow-step-content {
+      padding: 1rem;
+    }
+
+    .flow-step-page {
+      display: inline-block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 760;
+      margin-bottom: 0.3rem;
+    }
+
+    .flow-step h3 {
+      color: white;
+      font-size: 1.08rem;
+      line-height: 1.25;
+      margin-bottom: 0.24rem;
+    }
+
+    .flow-step p {
+      color: var(--subtle);
+      font-size: 0.9rem;
+      line-height: 1.38;
+    }
+
+    .flow-arrow {
+      display: grid;
+      place-items: center;
+      align-self: center;
+      height: 70px;
+      color: white;
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      user-select: none;
+    }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255, 255, 255, 0.13);
+      padding: 2rem 6vw;
+      color: var(--subtle);
+      background: rgba(5, 5, 5, 0.92);
+      backdrop-filter: blur(18px);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1050px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 0.3rem;
+        padding: 0.55rem 4vw;
+      }
+
+      .brand {
+        justify-self: center;
+      }
+
+      nav {
+        width: 100%;
+        overflow-x: auto;
+        justify-content: center;
+        padding-bottom: 0.1rem;
+      }
+
+      :root {
+        --topbar-h: 88px;
+      }
+
+      .media-grid,
+      .text-panel,
+      .flowchart {
+        grid-template-columns: 1fr;
+      }
+
+      .media-results-layout {
+        height: auto;
+        min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+      }
+
+      .media-grid {
+        grid-template-rows: minmax(240px, 1fr) minmax(240px, 1fr);
+      }
+
+      .compact-results-box {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-arrow {
+        width: 88px;
+        height: 52px;
+        justify-self: center;
+        transform: rotate(90deg);
+      }
+
+      .text-panel {
+        min-height: auto;
+      }
+
+      .tests-notes {
+        min-height: 320px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .media-grid {
+        grid-template-rows: minmax(300px, 1fr) minmax(300px, 1fr);
+      }
+
+      .flow-step img {
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gif-background" aria-hidden="true">
+    <img id="heroGif" src="assets/mpc_v2_animation.gif" alt="" />
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Project homepage">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>Project Name</span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <a class="nav-link" href="overview.html">Overview</a>
+      <a class="nav-link" href="process.html">Process</a>
+      <a class="nav-link" href="results.html">Results</a>
+      <a class="nav-link" href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="MPC aircraft animation hero">
+      <div class="hero-card">
+        <h1>MPC-Controlled Flying Wing</h1>
+        <p>
+          The opening view uses the aircraft flight animation as the full-page background.
+          Scroll to compare the aircraft motion with live heading, pitch, and roll tracking.
+        </p>
+      </div>
+    </section>
+
+    <section id="tracking" class="section media-section" aria-label="Flight, tracking, and results explanation">
+      <div class="section-inner">
+        <div class="media-results-layout">
+          <div class="media-grid">
+            <article class="media-card">
+              <img
+                id="flightGif"
+                class="sync-gif fill"
+                src="assets/mpc_v2_animation.gif"
+                data-sync-src="assets/mpc_v2_animation.gif"
+                alt="MPC v2 flight animation"
+              />
+              <div class="media-card-caption">MPC v2 Flight Animation</div>
+            </article>
+
+            <article class="media-card">
+              <img
+                id="trackingGif"
+                class="sync-gif fill"
+                src="assets/attitude_tracking_live_MPC_v2.gif"
+                data-sync-src="assets/attitude_tracking_live_MPC_v2.gif"
+                alt="Live heading, pitch, and roll tracking animation"
+              />
+              <div class="media-card-caption">Live Heading, Pitch, and Roll Tracking</div>
+            </article>
+          </div>
+
+          <div class="compact-results-box" aria-label="Short results explanation">
+            <div>
+              <div class="section-kicker">Tests</div>
+              <h2>Short Results Explanation</h2>
+            </div>
+
+            <p>
+              Replace this placeholder directly in the HTML. Briefly explain what the viewer should notice:
+              the MPC captures the commanded heading, uses a bank/roll maneuver to turn the flying wing,
+              settles pitch near the command, and returns roll toward zero after the heading maneuver.
+            </p>
+
+            <p>
+              You can also note any remaining small steady-state oscillation and whether it is caused by
+              yaw-roll coupling, limited yaw authority, or MPC damping tradeoffs.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="process-flow" class="section process-section" aria-label="Project process flowchart">
+      <div class="section-inner">
+        <section class="flowchart-panel" aria-label="Project flowchart">
+          <div class="flowchart-header">
+            <h2>Project Flow</h2>
+            <p>Click a step to open its page.</p>
+          </div>
+
+          <div class="flowchart" aria-label="Project flowchart">
+            <a class="flow-step" href="sparse-data-input.html">
+              <img src="assets/flow-input.jpg" alt="Sparse data input illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Sparse Data</span>
+                <h3>Sparse Data Input</h3>
+                <p>Initial data sources, constraints, and low-density observations.</p>
+              </div>
+            </a>
+
+            <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
+
+            <a class="flow-step" href="process.html">
+              <img src="assets/flow-prediction.jpg" alt="Surrogate data prediction illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Process</span>
+                <h3>Surrogate Data Prediction</h3>
+                <p>Modeling, interpolation, and prediction of surrogate datasets.</p>
+              </div>
+            </a>
+
+            <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
+
+            <a class="flow-step" href="results.html">
+              <img src="assets/flow-application.jpg" alt="Surrogate data application illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Results</span>
+                <h3>Surrogate Data Application</h3>
+                <p>Use the predicted data in downstream analysis and project outcomes.</p>
+              </div>
+            </a>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Project Name. Built by the team.</p>
+  </footer>
+
+  <script>
+    const heroGif = document.getElementById("heroGif");
+    const flightGif = document.getElementById("flightGif");
+    const trackingGif = document.getElementById("trackingGif");
+    const syncedGifs = [flightGif, trackingGif].filter(Boolean);
+
+    function startSyncedGifs() {
+      // Plain GIFs cannot be frame-locked by browsers. Assigning src values in
+      // the same frame is the closest reliable way to start/restart them together.
+      const cacheBust = Date.now();
+
+      syncedGifs.forEach((img) => {
+        const src = img.dataset.syncSrc;
+        if (!src) return;
+        img.src = `${src}?sync=${cacheBust}`;
+      });
+    }
+
+    function updateBackgroundFade() {
+      const y = window.scrollY || window.pageYOffset;
+
+      // First page: the flight GIF is the background.
+      // After scrolling into the GIF comparison section, dim it slightly so the cards are readable.
+      const fadeStart = window.innerHeight * 0.55;
+      const fadeEnd = window.innerHeight * 1.10;
+
+      let opacity = 1.0;
+      if (y > fadeStart) {
+        const p = Math.min(1, (y - fadeStart) / Math.max(1, fadeEnd - fadeStart));
+        opacity = 1.0 - 0.72 * p;
+      }
+
+      heroGif.style.opacity = String(opacity);
+    }
+
+    window.addEventListener("load", () => {
+      startSyncedGifs();
+      updateBackgroundFade();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) startSyncedGifs();
+    });
+
+    window.addEventListener("scroll", updateBackgroundFade, { passive: true });
+    window.addEventListener("resize", updateBackgroundFade);
+  </script>
+</body>
+</html>

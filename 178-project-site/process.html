@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Process</title>
+</head>
+<body style="font-family: system-ui; background: #1e1e1e; color: white; padding: 3rem;">
+  <a href="index.html" style="color: #9cdcfe;">← Back to Home</a>
+  <h1 style='font-size:50px'>Process</h1>
+  <h2 style='font-size:24px'></p>Creating, training, and evaluating machine learning models for our use case. </h2>
+  <p> With a data-set of around 4000 vectors we have multiple different approaches of creating a model that 
+    accounts for parameters that are on non principal axes. This project will require the use of multiple 
+    different machine learning models. The process will follow these 6 steps.  
+    <ol> 
+      <li> Load the data from the master sheets. </li>
+      <li> Scramble the ordered data from the mastersheet into a new shuffled csv file. </li>
+      <li> Normalize the data. </li> 
+      <li> Organize and fit our data into input sequences and output values. </li>
+      <li> Build train and evaluate the three model. </li>
+      <li> Compare the models and choose the best performer. </li>
+    </ol>
+  </p>
+  <h2> Step 1: Loading our data from the master sheet.</h2>
+  
+  <p> Using the Pandas library we can simply load our off axis data and basis data. We cut off any un-needed columns 
+  to reduce our data frame to the following inputs and outputs. </p>
+  
+  <h3 style="margin-bottom: 0;">Inputs</h3>
+  <ol style="margin-top: 0;">
+    <li>&alpha; -> Vertical Attitude</li> 
+    <li>&beta; -> Horizontal Attitude</li>  
+    <li>&Delta;<sub>S</sub> -> Elevon Combined Angle </li>
+    <li>&Delta;<sub>D</sub> -> Elevon Angle Differential </li>
+  </ol>
+
+  <h3 style="margin-bottom: 0;">Outputs</h3>
+  <ol style="margin-top: 0;">
+    <li>C<sub>D</sub> -> Drag Coeff. </li>
+    <li>C<sub>L</sub> -> Lift Coeff. </li>
+    <li>C<sub>Y</sub> -> Side Force Coeff. </li>
+    <li>C<sub>l</sub> -> Roll Coeff.  </li>
+    <li>C<sub>n</sub> -> Yaw Coeff.  </li>
+    <li>C<sub>m</sub> -> Moment Coeff. </li>
+  </ol>
+
+
+
+  
+
+</body>
+</html>
