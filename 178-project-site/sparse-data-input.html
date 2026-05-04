@@ -436,7 +436,7 @@
       </p>
 
       <figure class="figure-block">
-        <img class="figure-image" src="assets/figA_178.PNG" alt="VSPAERO workflow diagram" />
+        <img class="figure-image" src="assets/figureA_178.PNG" alt="VSPAERO workflow diagram" onerror="this.onerror=null; this.src='assets/figA_178.PNG';" />
       </figure>
       <p class="figure-caption">Figure A. Recommended workflow diagram showing how OpenVSP geometry and sweep variables become an aerodynamic coefficient database.</p>
 
@@ -473,7 +473,7 @@
       </p>
 
       <figure class="figure-block">
-        <img class="figure-image" src="assets/fig1_178.PNG" alt="VSPAERO sampling grid visualization" />
+        <img class="figure-image" src="assets/figure1_178.PNG" alt="VSPAERO sampling grid visualization" onerror="this.onerror=null; this.src='assets/fig1_178.PNG';" />
       </figure>
       <p class="figure-caption">Figure 1. Recommended visualization of the aerodynamic sweep domain used to create the sparse data input.</p>
 
@@ -492,7 +492,7 @@
       </p>
 
       <figure class="figure-block">
-        <img class="figure-image" src="assets/fig2_178.PNG" alt="Sparse data table structure diagram" />
+        <img class="figure-image" src="assets/figure2_178.PNG" alt="Sparse data table structure diagram" onerror="this.onerror=null; this.src='assets/fig2_178.PNG';" />
       </figure>
       <p class="figure-caption">Figure 2. Recommended schematic of the sparse database format, showing how each sampled input state maps to aerodynamic coefficient outputs.</p>
 
@@ -509,12 +509,9 @@
         This constraint is important for interpreting the final surrogate. The surrogate should not be viewed as creating new high-fidelity physics from nothing. Instead, it learns from a limited set of aerodynamic anchor points. Its reliability depends on the quality, coverage, and consistency of those anchor points, as well as the smoothness of the underlying aerodynamic trends between them.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Figure 3: Sparse Versus Dense Sampling</strong>
-          Suggested diagram: a comparison between a dense grid and the selected sparse grid in a simplified two- or three-variable space. A strong version would show how the sparse dataset covers the major envelope while leaving unsampled gaps for the surrogate model to interpolate.
-        </div>
-      </div>
+      <figure class="figure-block">
+        <img class="figure-image" src="assets/figure3_178.PNG" alt="Sparse versus dense sampling visualization" onerror="this.onerror=null; this.src='assets/fig3_178.PNG';" />
+      </figure>
       <p class="figure-caption">Figure 3. Recommended visualization comparing the selected sparse sampling strategy against a hypothetical dense aerodynamic database.</p>
 
       <h4>3.3 Preparation: converting VSPAERO outputs into surrogate-ready data</h4>
@@ -548,12 +545,9 @@
         The first group of outputs, <strong>C<sub>L</sub></strong>, <strong>C<sub>D</sub></strong>, and <strong>C<sub>m</sub></strong>, is most directly tied to longitudinal flight behavior. <strong>C<sub>L</sub></strong> indicates how much lift the vehicle produces as angle of attack changes. <strong>C<sub>D</sub></strong> captures the drag penalty associated with that flight condition and control state. <strong>C<sub>m</sub></strong> describes the pitching moment, which is important for trim and pitch stability. Plotting these three quantities against &alpha; provides a direct check on whether the VSPAERO-generated database behaves in a physically reasonable way.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Figure 5: Longitudinal Coefficient Trends Across Angle of Attack</strong>
-          Suggested plot: C<sub>L</sub>, C<sub>D</sub>, and C<sub>m</sub> versus &alpha; at representative &beta; and elevon settings. A useful version would overlay several symmetric elevon deflections so the reader can see how pitch-control input shifts the lift curve, drag buildup, and pitching-moment trend.
-        </div>
-      </div>
+      <figure class="figure-block">
+        <img class="figure-image" src="assets/figure5_178.PNG" alt="Longitudinal coefficient trends across angle of attack" onerror="this.onerror=null; this.src='assets/fig5_178.PNG';" />
+      </figure>
       <p class="figure-caption">Figure 5. Recommended longitudinal coefficient plot showing lift, drag, and pitching-moment trends across the angle-of-attack sweep.</p>
 
       <p>
@@ -565,12 +559,9 @@
         The elevon sweep was included because the project is not only interested in passive aerodynamic behavior, but also in how the aircraft responds to commanded control inputs. Symmetric elevon deflection primarily affects pitch-related behavior, especially <strong>C<sub>m</sub></strong>, because both trailing-edge surfaces move together and alter the overall longitudinal loading. Differential elevon deflection primarily affects roll-related behavior, especially <strong>C<sub>l</sub></strong>, because the left and right sides of the aircraft receive opposite control inputs.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Figure 6: Elevon Control-Deflection Effectiveness</strong>
-          Suggested plot: C<sub>m</sub> versus symmetric elevon deflection and C<sub>l</sub> versus differential elevon deflection, ideally at several representative &alpha; values. This would show both the sign and approximate strength of pitch and roll authority across the sampled control range.
-        </div>
-      </div>
+      <figure class="figure-block">
+        <img class="figure-image" src="assets/figure6_178.PNG" alt="Elevon control deflection effectiveness plot" onerror="this.onerror=null; this.src='assets/fig6_178.PNG';" />
+      </figure>
       <p class="figure-caption">Figure 6. Recommended control-effectiveness plot for connecting elevon deflection inputs to pitch and roll moment outputs.</p>
 
       <p>
@@ -582,12 +573,9 @@
         The remaining coefficients, <strong>C<sub>Y</sub></strong>, <strong>C<sub>l</sub></strong>, and <strong>C<sub>n</sub></strong>, are most useful for understanding lateral-directional behavior. These outputs become especially important when the aircraft experiences sideslip. <strong>C<sub>Y</sub></strong> describes side force, <strong>C<sub>l</sub></strong> describes rolling moment, and <strong>C<sub>n</sub></strong> describes yawing moment. Looking at these coefficients versus &beta; helps reveal whether the aircraft has a stabilizing directional response and whether sideslip introduces roll-yaw coupling.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Figure 7: Lateral-Directional Response Versus Sideslip</strong>
-          Suggested plot: C<sub>Y</sub>, C<sub>l</sub>, and C<sub>n</sub> versus &beta; for neutral, symmetric, and differential elevon cases. This plot would show how sideslip affects side force, roll moment, and yaw moment, and whether elevon inputs introduce coupled lateral-directional behavior.
-        </div>
-      </div>
+      <figure class="figure-block">
+        <img class="figure-image" src="assets/figure7_178.PNG" alt="Lateral directional response versus sideslip plot" onerror="this.onerror=null; this.src='assets/fig7_178.PNG';" />
+      </figure>
       <p class="figure-caption">Figure 7. Recommended lateral-directional coefficient plot for understanding sideslip response and yaw-roll coupling.</p>
 
       <p>
