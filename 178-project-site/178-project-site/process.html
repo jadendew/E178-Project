@@ -3,244 +3,424 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aero Data - VFS Micro Air Vehicle</title>
+    <title>Process | Surrogate-Based MPC Control</title>
     <style>
-        :root {
-            --bg: #050505;
-            --panel: rgba(18, 18, 18, 0.92);
-            --panel-soft: rgba(32, 32, 34, 0.82);
-            --border: rgba(255, 255, 255, 0.15);
-            --text: #d4d4d4;
-            --muted: #9cdcfe;
-            --subtle: #b8b8b8;
-            --accent: #179fff;
-            --shadow: rgba(0, 0, 0, 0.48);
-            
-            /* Preserved old variables to ensure any inline styles continue to work */
-            --bg-color: var(--bg);
-            --text-color: var(--text);
-            --accent-color: var(--accent);
-            --secondary-text: var(--subtle);
-            --border-color: var(--border);
-        }
+    :root {
+      --bg: #050505;
+      --panel: rgba(18, 18, 18, 0.92);
+      --panel-soft: rgba(32, 32, 34, 0.82);
+      --border: rgba(255, 255, 255, 0.15);
+      --text: #d4d4d4;
+      --muted: #9cdcfe;
+      --subtle: #b8b8b8;
+      --accent: #179fff;
+      --shadow: rgba(0, 0, 0, 0.48);
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        html {
-            scroll-behavior: smooth;
-            background: var(--bg);
-        }
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
 
-        body {
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background:
-                radial-gradient(circle at 12% 0%, rgba(23, 159, 255, 0.13), transparent 35%),
-                radial-gradient(circle at 90% 16%, rgba(0, 122, 204, 0.10), transparent 34%),
-                var(--bg);
-            color: var(--text);
-            line-height: 1.65;
-            min-height: 100vh;
-        }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(23, 159, 255, 0.13), transparent 35%),
+        radial-gradient(circle at 90% 16%, rgba(0, 122, 204, 0.10), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            min-height: 58px;
-            padding: 0.7rem 6vw;
-            background: rgba(5, 5, 5, 0.94);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.10);
-            backdrop-filter: blur(18px);
-        }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      min-height: 58px;
+      padding: 0.7rem 6vw;
+      background: rgba(5, 5, 5, 0.94);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(18px);
+    }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: white;
-        }
+    .back-link {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
 
-        .nav-links {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
+    .nav-links {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
 
-        .nav-links a {
-            color: rgba(255, 255, 255, 0.84);
-            font-size: 0.86rem;
-            padding: 0.38rem 0.6rem;
-            border-radius: 8px;
-            transition: background 160ms ease;
-        }
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 0.86rem;
+      padding: 0.38rem 0.6rem;
+      border-radius: 8px;
+      transition: background 160ms ease;
+    }
 
-        .nav-links a:hover,
-        .nav-links a:focus-visible {
-            background: rgba(255, 255, 255, 0.09);
-            outline: none;
-        }
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      background: rgba(255, 255, 255, 0.09);
+      outline: none;
+    }
 
-        .nav-links a.active {
-            background: rgba(255, 255, 255, 0.09);
-        }
+    main {
+      width: min(1180px, calc(100% - 10vw));
+      margin: 0 auto;
+      padding: 2.4rem 0 5rem;
+    }
 
-        main {
-            width: min(1180px, calc(100% - 10vw));
-            margin: 0 auto;
-            padding: 2.4rem 0 5rem;
-        }
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.4rem;
+    }
 
-        .section-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1.4rem;
-        }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 28px 90px var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: clamp(1.1rem, 2.2vw, 1.65rem);
+    }
 
-        .card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            box-shadow: 0 28px 90px var(--shadow);
-            backdrop-filter: blur(18px);
-            padding: clamp(1.1rem, 2.2vw, 1.65rem);
-        }
+    .card.full {
+      grid-column: 1 / -1;
+    }
 
-        .card.full {
-            grid-column: 1 / -1;
-        }
+    .kicker {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      font-weight: 760;
+      margin-bottom: 0.65rem;
+    }
 
-        h1, h2, h3 {
-            color: white;
-            letter-spacing: -0.045em;
-        }
+    h1,
+    h2,
+    h3 {
+      color: white;
+      letter-spacing: -0.045em;
+    }
 
-        h1 {
-            font-size: clamp(2rem, 4vw, 3.6rem);
-            line-height: 1;
-            margin-bottom: 1rem;
-        }
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
 
-        h2 {
-            font-size: clamp(1.35rem, 2.2vw, 2rem);
-            line-height: 1.1;
-            margin-bottom: 0.85rem;
-        }
+    h2 {
+      font-size: clamp(1.35rem, 2.2vw, 2rem);
+      line-height: 1.1;
+      margin-bottom: 0.85rem;
+    }
 
-        h3 {
-            font-size: 1.05rem;
-            margin: 1rem 0 0.35rem;
-        }
+    h3 {
+      font-size: 1.05rem;
+      margin: 1rem 0 0.35rem;
+    }
 
-        p {
-            color: rgba(255, 255, 255, 0.74);
-            margin-bottom: 0.85rem;
-        }
+    p {
+      color: rgba(255, 255, 255, 0.74);
+      margin-bottom: 0.85rem;
+    }
 
-        ul, ol {
-            color: rgba(255, 255, 255, 0.74);
-            margin-top: 0.5rem;
-            margin-bottom: 1.5rem;
-            padding-left: 1.5rem;
-        }
-        
-        li {
-            margin-bottom: 0.45rem;
-        }
+    ul {
+      color: rgba(255, 255, 255, 0.74);
+      padding-left: 1.15rem;
+      margin: 0.5rem 0 0.2rem;
+    }
 
-        /* Fix for superscript and subscript vertical spacing */
-        sup, sub {
-            line-height: 0;
-        }
+    li {
+      margin-bottom: 0.45rem;
+    }
 
-        /* Custom image styling for graphs adapted to new theme */
-        .graph-image {
-            max-width: 100%;
-            display: block; 
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin: 1.5rem auto; 
-            background-color: #ffffff; 
-        }
+    .formula {
+      margin: 0.8rem 0 1rem;
+      padding: 0.85rem 1rem;
+      background: rgba(5, 5, 5, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.88);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92rem;
+      overflow-x: auto;
+    }
 
-        .graph-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin: 1.5rem auto; 
-            max-width: 85%; 
-        }
+    .results-media {
+      margin-top: 1rem;
+      display: grid;
+      gap: 0.85rem;
+    }
 
-        @media (min-width: 768px) {
-            .graph-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .graph-grid .graph-image {
-                max-width: 100%; 
-                margin: 0; 
-            }
-        }
+    .results-media img {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      background: white;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+    }
 
-        code {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 0.2em 0.4em;
-            border-radius: 6px;
-            font-size: 85%;
-            color: var(--muted);
-        }
+    .caption {
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-top: 0.2rem;
+    }
 
-        @media (max-width: 980px) {
-            main {
-                width: min(100% - 2rem, 1180px);
-                padding-top: 2.5rem;
-            }
+    .figure-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
 
-            .topbar {
-                align-items: flex-start;
-                flex-direction: column;
-            }
+    .figure-grid.single {
+      grid-template-columns: 1fr;
+    }
 
-            .section-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    .figure-card {
+      padding: 0.85rem;
+      background: rgba(30, 30, 30, 0.60);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+    }
+
+    .figure-card h3 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .discussion-box {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(23, 159, 255, 0.10);
+      border: 1px solid rgba(23, 159, 255, 0.28);
+      border-radius: 16px;
+    }
+
+    .discussion-box h3 {
+      margin-top: 0;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      overflow: hidden;
+      border-radius: 16px;
+      font-size: 0.94rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      vertical-align: top;
+    }
+
+    .comparison-table th {
+      color: white;
+      background: rgba(0, 122, 204, 0.28);
+      text-align: left;
+    }
+
+    .comparison-table td {
+      color: rgba(255, 255, 255, 0.74);
+      background: rgba(30, 30, 30, 0.58);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 0.85rem 0 0.1rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.38rem 0.62rem;
+      border-radius: 999px;
+      background: rgba(23, 159, 255, 0.11);
+      border: 1px solid rgba(23, 159, 255, 0.28);
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.83rem;
+    }
+
+
+    /* Keep large GIFs/plots from dominating or overflowing the page */
+    .results-media.comparison-media,
+    .figure-grid.comparison-figures {
+      width: min(100%, 920px);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .results-media.comparison-media img {
+      max-height: 520px;
+      width: 100%;
+      object-fit: contain;
+    }
+
+    .figure-grid.comparison-figures img {
+      max-height: 430px;
+      width: 100%;
+      object-fit: contain;
+    }
+
+    .figure-grid.comparison-figures .figure-card {
+      overflow: hidden;
+    }
+
+    .figure-grid.comparison-figures.single {
+      grid-template-columns: 1fr;
+    }
+
+    footer {
+      width: min(1180px, calc(100% - 10vw));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--subtle);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    @media (max-width: 980px) {
+      main {
+        width: min(100% - 2rem, 1180px);
+        padding-top: 2.5rem;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .section-grid,
+      .figure-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Process-page compatibility classes: keep existing foreground layout/images intact */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: white;
+    }
+
+    .nav-links a.active {
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .graph-image {
+      max-width: 100%;
+      display: block;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      margin: 1.5rem auto;
+      background-color: #ffffff;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    .graph-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin: 1.5rem auto;
+      max-width: 85%;
+    }
+
+    pre {
+      background: rgba(5, 5, 5, 0.62) !important;
+      padding: 1rem !important;
+      border-radius: 14px !important;
+      border: 1px solid rgba(255, 255, 255, 0.11) !important;
+      overflow-x: auto;
+      margin-bottom: 1.5rem !important;
+    }
+
+    code {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 0.2em 0.4em;
+      border-radius: 6px;
+      font-size: 85%;
+      color: var(--muted);
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    sup,
+    sub {
+      line-height: 0;
+    }
+
+    ol {
+      color: rgba(255, 255, 255, 0.74);
+      padding-left: 1.15rem;
+      margin: 0.5rem 0 0.2rem;
+    }
+
+    @media (min-width: 768px) {
+      .graph-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .graph-grid .graph-image {
+        max-width: 100%;
+        margin: 0;
+      }
+    }
+</style>
 </head>
 <body>
     <header class="topbar">
-        <div class="logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--accent)">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" fill="none"/>
-            </svg>
-            VTOL MAV
-        </div>
-        <nav class="nav-links">
-            <a href="index.html">Project</a>
-            <a href="#">Architecture</a>
-            <a href="#" class="active">Aero</a>
-            <a href="#">Controls</a>
-        </nav>
-    </header>
+    <a class="back-link" href="index.html">← Back to Home</a>
+    <nav class="nav-links" aria-label="Process page navigation">
+      <a href="#overview">Overview</a>
+      <a href="#loading">Loading</a>
+      <a href="#scrambling">Scrambling</a>
+      <a href="#splitting">Splitting</a>
+      <a href="#normalizing">Normalizing</a>
+      <a href="#training">Models</a>
+    </nav>
+  </header>
 
     <main>
         <section class="section-grid">
             
-            <article class="card full">
+            <article id="overview" class="card full">
+                <div class="kicker">Process Overview</div>
                 <h1>Aerodynamic Data Processing</h1>
                 <h2 style='font-size:24px'>Creating, training, and evaluating machine learning models for our use case. </h2>
                 <p> 
@@ -258,7 +438,8 @@
                 </p>
             </article>
 
-            <article class="card full">
+            <article id="loading" class="card full">
+                <div class="kicker">Step 1</div>
                 <h1> 1. Loading and evaluating the raw data. </h1>
                 
                 <p>We have two different sheets of data, <i>"aero_master.csv"</i> and <i>"sweep_body_rates.csv"</i>.</p>
@@ -294,7 +475,8 @@
 
                 <pre style="background: rgba(0, 0, 0, 0.4); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; margin-bottom: 1.5rem;"><code style="font-family: Consolas, Monaco, 'Courier New', monospace; color: var(--muted); font-size: 0.9rem;">rawDat = pd.read_csv('aero_autosweep.csv')
 testDat = pd.read_csv('aero_nonposed_cleaned.csv')</code></pre>
-            </article> <article class="card full">
+            </article> <article id="scrambling" class="card full">
+                <div class="kicker">Step 2</div>
                 <h1> 2. Scrambling the loaded data </h1>
                 <p> 
                     The raw data from the master sheet is organized in the angle of attack sweeps due to how data 
@@ -312,7 +494,8 @@ testDat = pd.read_csv('aero_nonposed_cleaned.csv')</code></pre>
 shuffledTest = testDat.sample(frac=1, random_state=67).reset_index(drop=True).to_csv('shuffledTestSweep.csv', index=False)</code></pre>
             </article> 
             
-            <article class="card full">
+            <article id="splitting" class="card full">
+                <div class="kicker">Step 3</div>
                 <h1> 3. Splitting the scrambled data</h1>
                 <p> 
                     Before we can begin creating any sort of model we need to split our data into their respective train, validate
@@ -349,7 +532,8 @@ halfData = shuffledTest.iloc[:len(shuffledTest) // 2]
 dataTest = pd.concat([dataTestRaw, halfData], axis=0)</code></pre>
             </article>
 
-            <article class="card full"> 
+            <article id="normalizing" class="card full"> 
+                <div class="kicker">Step 4</div>
                 <h1> 4. Normalizing our datasets </h1>
                 <p> 
                     Once our data has been properly loaded and split we can now being the normalization process without risk
@@ -368,7 +552,8 @@ dataTest = pd.concat([dataTestRaw, halfData], axis=0)</code></pre>
 yScaler = StandardScaler()</code></pre>
             </article>
 
-            <article class="card full"> 
+            <article id="inputs-outputs" class="card full"> 
+                <div class="kicker">Step 5</div>
                 <h1> 5. Organizing and fitting out inputs and outputs </h1>
 
                 <p> We need to define what our inputs and outputs are:</p>
@@ -386,7 +571,8 @@ yScaler = StandardScaler()</code></pre>
                 <img src="assets/dataset_def.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 750px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
             </article>
 
-            <article class="card full"> 
+            <article id="training" class="card full"> 
+                <div class="kicker">Step 6</div>
                 <h1> 6. Training and testing our models </h1>
                 <p> We will be training and testing the following models </p>
                 <ul> 
@@ -460,5 +646,9 @@ yScaler = StandardScaler()</code></pre>
 
         </section>
     </main>
+
+  <footer>
+    <p>© 2026 AeroTelligence, Group 14. Process page for aerodynamic data processing and model training.</p>
+  </footer>
 </body>
 </html>

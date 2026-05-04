@@ -3,11 +3,390 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Project Overview</title>
+  <title>Background and Motivation | Surrogate Modeling</title>
+
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: rgba(18, 18, 18, 0.92);
+      --panel-soft: rgba(32, 32, 34, 0.82);
+      --border: rgba(255, 255, 255, 0.15);
+      --text: #d4d4d4;
+      --muted: #9cdcfe;
+      --subtle: #b8b8b8;
+      --accent: #179fff;
+      --shadow: rgba(0, 0, 0, 0.48);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(23, 159, 255, 0.13), transparent 35%),
+        radial-gradient(circle at 90% 16%, rgba(0, 122, 204, 0.10), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      min-height: 58px;
+      padding: 0.7rem 6vw;
+      background: rgba(5, 5, 5, 0.94);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(18px);
+    }
+
+    .back-link {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 0.86rem;
+      padding: 0.38rem 0.6rem;
+      border-radius: 8px;
+      transition: background 160ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      background: rgba(255, 255, 255, 0.09);
+      outline: none;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 10vw));
+      margin: 0 auto;
+      padding: 2.2rem 0 5rem;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.4rem;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 28px 90px var(--shadow);
+      backdrop-filter: blur(18px);
+      padding: clamp(1.1rem, 2.2vw, 1.65rem);
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .kicker {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      font-weight: 760;
+      margin-bottom: 0.65rem;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: white;
+      letter-spacing: -0.045em;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 4.2vw, 4rem);
+      line-height: 0.98;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: clamp(1.35rem, 2.2vw, 2rem);
+      line-height: 1.1;
+      margin-bottom: 0.85rem;
+    }
+
+    h3 {
+      font-size: 1.06rem;
+      margin: 1rem 0 0.35rem;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.74);
+      margin-bottom: 0.85rem;
+    }
+
+    .lead {
+      font-size: clamp(1rem, 1.15vw, 1.13rem);
+      max-width: 120ch;
+    }
+
+    .formula {
+      margin: 0.8rem 0 1rem;
+      padding: 0.85rem 1rem;
+      background: rgba(5, 5, 5, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.88);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92rem;
+      overflow-x: auto;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 0.9rem;
+    }
+
+    .mini-card {
+      padding: 1rem;
+      background: rgba(30, 30, 30, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+    }
+
+    .mini-card h3 {
+      margin-top: 0;
+      margin-bottom: 0.4rem;
+    }
+
+    .mini-card p {
+      font-size: 0.94rem;
+      margin-bottom: 0;
+    }
+
+    .callout {
+      margin-top: 0.95rem;
+      padding: 1rem;
+      background: rgba(23, 159, 255, 0.10);
+      border: 1px solid rgba(23, 159, 255, 0.28);
+      border-radius: 16px;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.9rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .workflow-step {
+      min-height: 126px;
+      padding: 0.85rem;
+      background: var(--panel-soft);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 16px;
+    }
+
+    .step-num {
+      color: var(--accent);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 760;
+      margin-bottom: 0.35rem;
+    }
+
+    .workflow-step strong {
+      display: block;
+      color: white;
+      line-height: 1.22;
+      margin-bottom: 0.28rem;
+    }
+
+    .workflow-step span {
+      display: block;
+      color: var(--subtle);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    .placeholder-note {
+      color: rgba(255, 255, 255, 0.55);
+      font-style: italic;
+    }
+
+    footer {
+      width: min(1180px, calc(100% - 10vw));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--subtle);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    @media (max-width: 980px) {
+      main {
+        width: min(100% - 2rem, 1180px);
+        padding-top: 2.5rem;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .section-grid,
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body style="font-family: system-ui; background: #1e1e1e; color: white; padding: 3rem;">
-  <a href="index.html" style="color: #9cdcfe;">← Back to Home</a>
-  <h1>Project Overview</h1>
-  <p>This is the dummy Project Overview page. Replace this with your project overview content.</p>
+
+<body>
+  <header class="topbar">
+    <a class="back-link" href="index.html">← Back to Home</a>
+    <nav class="nav-links" aria-label="Overview page navigation">
+      <a href="#motivation">Motivation</a>
+      <a href="#what">Surrogate Modeling</a>
+      <a href="#project">Our Project</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section-grid">
+
+      <article id="motivation" class="card full">
+        <div class="kicker">Project motivation</div>
+        <h1>Project Motivation</h1>
+        <p class="lead">
+          Aerodynamic analysis is an important component of aircraft design, whether it is used for designing lifting surfaces,
+          control surfaces, propulsion systems, or GNC algorithms. This analysis usually requires computationally expensive
+          computational fluid dynamics (CFD) simulations that must be run over a large range of potential operating points.
+          This can quickly become impractical for engineering problems that require a lot of analysis to be done both often
+          and quickly.
+        </p>
+        <p>
+          A proposed solution to this problem that has seen growing attention in recent years is to develop ML surrogate models
+          trained on sparse data sweeps conducted using CFD software. These models can then be used to predict aerodynamic data
+          for conditions that have not been directly simulated. Surrogate models have the advantage of requiring less compute power
+          and running much faster, allowing for rapid design iteration or use in GNC algorithms.
+        </p>
+        <p>
+          Given that our group members all work in aerospace or aerospace-adjacent fields, we wanted to see if we could use the
+          knowledge we learned in this E178 class to create a surrogate model for the aerodynamic properties of a flying wing
+          and apply it to an aircraft control problem.
+        </p>
+      </article>
+
+      <article id="what" class="card full">
+        <div class="kicker">Background</div>
+        <h2>What is surrogate modeling?</h2>
+        <p>
+          A surrogate model is a machine learning model that has been trained on a set of data generated by CFD, FEA, or experiment that can be used to predict
+          parameters that would otherwise be obtained utilizing these methods. The model serves as a faster approximation of a more expensive simulation or experiment.
+          In training this model you reduce the number of simulations or experiments needed to just the amount needed to train an accurate model, reducing time and cost.
+          This however does impose a fundamental limitation on the use of surrogate models as they are only valuable if the cost of training and running the model is less
+          than just using the simulation or experiment to generate all of the needed data. This means that surrogate modeling is only useful in applications where very large
+          amounts of data need to be generated.
+          
+        </p>
+
+        <div class="formula">
+          expensive simulation / experiment data → regression model → fast approximate prediction
+        </div>
+
+        <p>
+          The key tradeoff is speed versus fidelity. A useful surrogate model should be much faster than the original analysis tool while still preserving the
+          trends that matter for whatever the model is being used for. These models have other drawbacks as well, the main one being their geometry dependence. surrogate models
+          are only as accurate as the data they were trained on, meaning that a model developed for one airfoil would not necessarily be an accurate model for a different one. Despite these limitations,
+          surrogate modeling still finds much use in the areas of control and design iteration where many different parameters need to be generated quickly and often.
+
+        </p>
+      </article>
+
+
+      <article id="project" class="card full">
+        <div class="kicker">Connect to Our Project</div>
+        <h2>How We Plan To Use Surrogate Modeling</h2>
+        <p>
+          This project applies surrogate modeling to the simulation of a flying wing aircraft, predicting its aerodynamic coefficients for any position in 3D space.
+          The original aerodynamic data is generated from sparse OpenVSP sweeps along a combination of angle of attack and yaw angle and along the principle axes of
+          the control surface deflection angles. From this data we use regression to train a surrogate that maps angle of attack, yaw angle, and control surface
+          deflections to the six aerodynamic coefficients experienced by the aircraft.
+
+        </p>
+
+        <div class="formula">
+          Input: [α, β, δS, δD] → MLP regression model → Output: [CL, CD, CY, Cl, Cn, Cm]
+        </div>
+
+        <p>
+          With this model generated we then apply the surrogate to an aircraft control problem. Once the surrogate is trained and can predict aerodynamic
+          coefficients quickly, those coefficients can be converted into forces and moments inside a flight dynamics simulation. These moments can then be used to predict
+          required control deflections to maintain a specified trajectory in a model predictive control (MPC) framework, serving as the final demonstration of the
+          success and accuracy of our model.
+        </p>
+
+        <div class="workflow" aria-label="Project workflow">
+          <div class="workflow-step">
+            <div class="step-num">Step 1</div>
+            <strong>Generate sparse data</strong>
+            <span>Collect aerodynamic coefficient samples across selected flight and control conditions.</span>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-num">Step 2</div>
+            <strong>Train regressors</strong>
+            <span>Train a set of regression models that map flight angles and surface deflections to aerodynamic coefficients.</span>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-num">Step 3</div>
+            <strong>Select best surrogate</strong>
+            <span>Compare the regression models and select the one that most accuratly captures the relationship between these angles and coefficents.</span>
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-num">Step 4</div>
+            <strong>Use in aircraft controller</strong>
+            <span>Use the selected model as the dynamics solver in an MPC framework to demonstrate the abilities and usefulness of our model.</span>
+          </div>
+        </div>
+      </article>
+
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 AeroTelligence, Group 14. Background page for surrogate-based aerodynamic modeling.</p>
+  </footer>
 </body>
 </html>

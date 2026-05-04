@@ -6,14 +6,16 @@
   <title>Sparse Data Input</title>
   <style>
     :root {
-      --bg: #1e1e1e;
-      --black: #050505;
-      --panel: rgba(37, 37, 38, 0.88);
-      --border: rgba(255, 255, 255, 0.13);
+      --bg: #050505;
+      --panel: rgba(18, 18, 18, 0.92);
+      --panel-soft: rgba(32, 32, 34, 0.82);
+      --border: rgba(255, 255, 255, 0.15);
       --text: #d4d4d4;
-      --subtle: #a7a7a7;
       --muted: #9cdcfe;
-      --accent: #007acc;
+      --subtle: #b8b8b8;
+      --accent: #179fff;
+      --shadow: rgba(0, 0, 0, 0.48);
+      --black: #050505;
     }
 
     * {
@@ -22,14 +24,20 @@
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
     body {
       min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 20% 20%, rgba(0, 122, 204, 0.14), transparent 30%),
+        radial-gradient(circle at 12% 0%, rgba(23, 159, 255, 0.13), transparent 35%),
+        radial-gradient(circle at 90% 16%, rgba(0, 122, 204, 0.10), transparent 34%),
         var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
     a {
@@ -40,66 +48,49 @@
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 10;
-      min-height: 54px;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      padding: 0.45rem 6vw;
-      background: rgba(5, 5, 5, 0.96);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.34);
+      min-height: 58px;
+      padding: 0.7rem 6vw;
+      background: rgba(5, 5, 5, 0.94);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(18px);
     }
 
-    .brand {
-      justify-self: start;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.58rem;
-      color: white;
-      font-size: 0.88rem;
-      font-weight: 650;
+    .back-link {
+      color: var(--muted);
+      font-size: 0.92rem;
     }
 
-    .brand-mark {
-      width: 9px;
-      height: 9px;
-      background: var(--accent);
-      border-radius: 2px;
-      box-shadow: 0 0 14px rgba(0, 122, 204, 0.85);
-    }
-
-    nav {
-      justify-self: center;
+    .nav-links {
       display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
       align-items: center;
-      justify-content: center;
-      gap: 0.1rem;
     }
 
-    .nav-link {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.46rem 0.82rem;
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 0.86rem;
+      padding: 0.38rem 0.6rem;
       border-radius: 8px;
-      color: white;
-      font-size: 0.84rem;
-      opacity: 0.9;
-      transition: background 180ms ease, opacity 180ms ease;
+      transition: background 160ms ease;
     }
 
-    .nav-link:hover,
-    .nav-link:focus-visible {
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
       background: rgba(255, 255, 255, 0.09);
-      opacity: 1;
       outline: none;
     }
 
     main {
-      width: min(1080px, calc(100% - 12vw));
+      width: min(1180px, calc(100% - 10vw));
       margin: 0 auto;
-      padding: clamp(4rem, 9vw, 7rem) 0;
+      padding: 2.4rem 0 5rem;
     }
 
     .hero {
@@ -115,16 +106,16 @@
       border: 1px solid var(--border);
       border-radius: 24px;
       padding: clamp(1.25rem, 3vw, 2rem);
-      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+      box-shadow: 0 28px 90px var(--shadow);
       backdrop-filter: blur(18px);
     }
 
     .kicker {
-      color: var(--muted);
+      color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.14em;
       font-size: 0.74rem;
-      font-weight: 700;
+      font-weight: 760;
       margin-bottom: 0.7rem;
     }
 
@@ -144,7 +135,7 @@
     }
 
     p {
-      color: var(--text);
+      color: rgba(255, 255, 255, 0.74);
       margin-bottom: 1rem;
     }
 
@@ -166,12 +157,13 @@
 
     .latex-section {
       margin: 1.2rem 0;
-      background: rgba(18, 18, 20, 0.94);
+      background: var(--panel);
       color: var(--text);
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid var(--border);
       border-radius: 24px;
       padding: clamp(1.4rem, 4vw, 3rem);
-      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+      box-shadow: 0 28px 90px var(--shadow);
+      backdrop-filter: blur(18px);
       font-family: Georgia, "Times New Roman", serif;
       line-height: 1.7;
     }
@@ -195,11 +187,12 @@
 
     .latex-section p,
     .latex-section li {
-      color: var(--text);
+      color: rgba(255, 255, 255, 0.74);
       font-size: 1.02rem;
     }
 
     .latex-section ul {
+      color: rgba(255, 255, 255, 0.74);
       margin: 0.75rem 0 1rem 1.35rem;
     }
 
@@ -207,32 +200,40 @@
       margin: 1rem 0;
       padding: 1rem;
       text-align: center;
-      background: rgba(255, 255, 255, 0.055);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(5, 5, 5, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.11);
       border-radius: 14px;
       font-family: "Times New Roman", Georgia, serif;
       font-size: 1.05rem;
       color: white;
+      overflow-x: auto;
     }
 
     .coefficient-table {
       width: 100%;
       border-collapse: collapse;
       margin: 1rem 0 1.4rem;
+      overflow: hidden;
+      border-radius: 16px;
       font-size: 0.96rem;
     }
 
     .coefficient-table th,
     .coefficient-table td {
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       padding: 0.75rem;
       vertical-align: top;
     }
 
     .coefficient-table th {
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(0, 122, 204, 0.28);
       color: white;
       text-align: left;
+    }
+
+    .coefficient-table td {
+      color: rgba(255, 255, 255, 0.74);
+      background: rgba(30, 30, 30, 0.58);
     }
 
     .figure-placeholder {
@@ -246,7 +247,7 @@
       background:
         linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-        rgba(255, 255, 255, 0.035);
+        rgba(30, 30, 30, 0.60);
       background-size: 28px 28px;
       border: 1px dashed rgba(255, 255, 255, 0.28);
       border-radius: 16px;
@@ -272,8 +273,8 @@
       display: block;
       margin-top: 2.2rem;
       padding: 1.35rem 1.5rem;
-      background: rgba(0, 122, 204, 0.13);
-      border: 1px solid rgba(23, 159, 255, 0.38);
+      background: rgba(23, 159, 255, 0.10);
+      border: 1px solid rgba(23, 159, 255, 0.28);
       border-radius: 18px;
       transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
     }
@@ -281,18 +282,18 @@
     .next-step-card:hover,
     .next-step-card:focus-visible {
       transform: translateY(-3px);
-      background: rgba(0, 122, 204, 0.2);
-      border-color: rgba(23, 159, 255, 0.68);
+      background: rgba(23, 159, 255, 0.16);
+      border-color: rgba(23, 159, 255, 0.58);
       outline: none;
     }
 
     .next-step-card .kicker-small {
       display: block;
-      color: var(--muted);
+      color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.14em;
       font-size: 0.72rem;
-      font-weight: 700;
+      font-weight: 760;
       margin-bottom: 0.45rem;
     }
 
@@ -335,21 +336,19 @@
       margin-bottom: 0;
     }
 
-    @media (max-width: 850px) {
-      .topbar {
-        grid-template-columns: 1fr;
-        justify-items: center;
-        gap: 0.3rem;
-        padding: 0.55rem 4vw;
+    @media (max-width: 980px) {
+      main {
+        width: min(100% - 2rem, 1180px);
+        padding-top: 2.5rem;
       }
 
-      .brand {
-        justify-self: center;
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
       }
 
       nav {
-        width: 100%;
-        overflow-x: auto;
+        justify-content: flex-start;
       }
 
       .hero,
@@ -361,17 +360,13 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="index.html" aria-label="Back to homepage">
-      <span class="brand-mark" aria-hidden="true"></span>
-      <span>Project Name</span>
-    </a>
-
-    <nav aria-label="Main navigation">
-      <a class="nav-link" href="overview.html">Overview</a>
-      <a class="nav-link" href="sparse-data-input.html">Sparse Data Input</a>
-      <a class="nav-link" href="process.html">Process</a>
-      <a class="nav-link" href="results.html">Results</a>
-      <a class="nav-link" href="contact.html">Contact</a>
+    <a class="back-link" href="index.html">← Back to Home</a>
+    <nav class="nav-links" aria-label="Sparse data page navigation">
+      <a href="#vspaero-tool">VSPAERO</a>
+      <a href="#sampling-domain">Sampling Domain</a>
+      <a href="#data-preparation">Data Inputs</a>
+      <a href="#coefficient-outputs">Coefficient Outputs</a>
+      <a href="#surrogate-workflow">Surrogate Workflow</a>
     </nav>
   </header>
 
@@ -400,7 +395,7 @@
         This section describes the creation of the sparse aerodynamic database used as the input layer for the surrogate modeling workflow. The dataset was generated using <em>VSPAERO</em> over a selected envelope of flight attitude and control-surface states. Each sample point represents one aerodynamic evaluation of the aircraft at a prescribed Reynolds number, angle of attack, sideslip angle, and elevon configuration. The resulting coefficients provide a compact description of the aircraft's force and moment response at that condition.
       </p>
 
-      <h3>1. VSPAERO as the Data-Generation Tool</h3>
+      <h3 id="vspaero-tool">1. VSPAERO as the Data-Generation Tool</h3>
       <p>
         VSPAERO is the aerodynamic solver distributed with OpenVSP. It is intended for rapid aerodynamic analysis of OpenVSP vehicle geometries, especially during conceptual and early-stage design. Unlike a full high-fidelity CFD workflow, where the user typically creates a volume mesh around the aircraft and solves the Navier-Stokes or Reynolds-averaged Navier-Stokes equations, VSPAERO uses a lower-order potential-flow formulation. This makes it much faster to run over many geometry, attitude, and control-input combinations, which is useful when the goal is to populate an aerodynamic database rather than resolve every detail of the flow field.
       </p>
@@ -435,7 +430,7 @@
         A CFD workflow is more appropriate when local flow details are important, such as boundary-layer behavior, shock structure, separated flow, viscous drag buildup, or detailed pressure distributions. However, CFD is usually more expensive to set up and run for large multidimensional sweeps. For this project, the immediate objective was to create a broad aerodynamic response map across many combinations of &alpha;, &beta;, and elevon deflection. VSPAERO provides a practical middle ground: it can rapidly generate approximate aerodynamic coefficients over a wide sweep space, while higher-fidelity CFD or wind-tunnel data could later be used to validate, correct, or enrich selected regions of the surrogate model.
       </p>
 
-      <h3>2. Sampling Domain</h3>
+      <h3 id="sampling-domain">2. Sampling Domain</h3>
       <p>
         The sparse dataset was generated at a fixed Reynolds number of <strong>Re = 5 &times; 10<sup>5</sup></strong>. The aerodynamic state space was swept across angle of attack, sideslip angle, and elevon deflections. The selected intervals were chosen to cover a useful range of longitudinal, lateral-directional, and control-coupled behavior while keeping the total number of VSPAERO cases manageable.
       </p>
@@ -470,7 +465,7 @@
       </div>
       <p class="figure-caption">Figure 1. Recommended visualization of the aerodynamic sweep domain used to create the sparse data input.</p>
 
-      <h3>3. Data Inputs, Constraints, and Preparation</h3>
+      <h3 id="data-preparation">3. Data Inputs, Constraints, and Preparation</h3>
       <p>
         The sparse aerodynamic database can be understood as a structured collection of input conditions paired with aerodynamic coefficient outputs. The input side of the dataset defines the state of the aircraft and controls for each VSPAERO case. In this project, each sample is identified by a Reynolds number, angle of attack, sideslip angle, and elevon configuration. These values act as the independent variables that the surrogate model will later use to infer the aircraft's aerodynamic response.
       </p>
@@ -534,7 +529,7 @@
       </div>
       <p class="figure-caption">Figure 4. Recommended preparation pipeline diagram showing how raw solver outputs are cleaned, checked, and formatted for surrogate modeling.</p>
 
-      <h3>4. Aerodynamic Coefficient Outputs</h3>
+      <h3 id="coefficient-outputs">4. Aerodynamic Coefficient Outputs</h3>
       <p>
         For each VSPAERO run, six nondimensional aerodynamic coefficients were extracted:
       </p>
@@ -645,7 +640,7 @@
         The placement of Figures 5 through 7 is meant to move from the most intuitive aircraft behavior to the more coupled behavior. Figure 5 explains the baseline longitudinal response, Figure 6 isolates control authority from elevon deflection, and Figure 7 shows how lateral-directional coefficients vary with sideslip and control coupling. Together, these plots would make the sparse dataset easier to interpret before it is passed into the surrogate prediction stage.
       </p>
 
-      <h3>5. Purpose in the Surrogate Workflow</h3>
+      <h3 id="surrogate-workflow">5. Purpose in the Surrogate Workflow</h3>
       <p>
         The VSPAERO results form the sparse input database for the surrogate prediction stage. Rather than evaluating the full continuous aerodynamic space directly, this workflow uses a finite set of sampled aerodynamic states to train or construct a surrogate model. The surrogate can then estimate aerodynamic coefficients at unsampled combinations of angle of attack, sideslip, and elevon deflection.
       </p>
