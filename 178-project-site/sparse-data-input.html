@@ -336,6 +336,24 @@
       margin-bottom: 0;
     }
 
+
+    .figure-block {
+      margin: 1.4rem 0;
+      text-align: center;
+    }
+
+    .figure-image {
+      display: block;
+      width: 100%;
+      max-width: 900px;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(0, 0, 0, 0.25);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+    }
+
     @media (max-width: 980px) {
       main {
         width: min(100% - 2rem, 1180px);
@@ -417,12 +435,9 @@
         The main outputs used here were the integrated aerodynamic force and moment coefficients. These outputs are not simply raw forces and torques; they are nondimensionalized values that make the results easier to compare across conditions and easier to use inside flight-dynamics or surrogate-modeling pipelines.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Diagram A: VSPAERO Workflow</strong>
-          Suggested diagram: OpenVSP aircraft geometry &rarr; VSPAERO sweep setup &rarr; batch aerodynamic cases &rarr; coefficient table. This would help readers understand how the solver fits into the data-generation pipeline before the surrogate model is introduced.
-        </div>
-      </div>
+      <figure class="figure-block">
+        <img class="figure-image" src="figA_178.png" alt="VSPAERO workflow diagram" />
+      </figure>
       <p class="figure-caption">Figure A. Recommended workflow diagram showing how OpenVSP geometry and sweep variables become an aerodynamic coefficient database.</p>
 
       <h4>Why not only use CFD?</h4>
@@ -457,12 +472,9 @@
         Because the dataset is sparse, it does not represent every possible state in the continuous flight envelope. Instead, it provides a structured set of anchor points. The surrogate model can then learn or interpolate between these anchors to estimate aerodynamic coefficients at unsampled combinations of attitude and control input.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Figure 1: VSPAERO Sampling Grid</strong>
-          Suggested plot: a 3D scatter plot or heat-map matrix showing sampled combinations of &alpha;, &beta;, and elevon deflection. A useful version would show &alpha; on one axis, &beta; on another axis, and color or panels for symmetric/differential elevon deflection. This would make the sparseness and structure of the aerodynamic database visually obvious.
-        </div>
-      </div>
+      <figure class="figure-block">
+        <img class="figure-image" src="fig1_178.png" alt="VSPAERO sampling grid visualization" />
+      </figure>
       <p class="figure-caption">Figure 1. Recommended visualization of the aerodynamic sweep domain used to create the sparse data input.</p>
 
       <h3 id="data-preparation">3. Data Inputs, Constraints, and Preparation</h3>
@@ -479,12 +491,9 @@
         Because the dataset is generated from a defined sweep, the input values are not arbitrary. They are organized sample points chosen to cover the operating range of interest. The &alpha; samples describe how the aircraft behaves as it pitches relative to the freestream, the &beta; samples describe how the aircraft behaves in yawed flow, and the elevon samples describe how the aerodynamic response changes under pitch-like and roll-like control inputs. This makes the dataset especially useful for surrogate modeling because the model receives a clear mapping from control/flight inputs to aerodynamic outputs.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Figure 2: Sparse Data Table Structure</strong>
-          Suggested diagram: a table schematic showing input columns on the left, such as Re, &alpha;, &beta;, &delta;<sub>L</sub>, &delta;<sub>R</sub>, &delta;<sub>sym</sub>, and &delta;<sub>diff</sub>, and output columns on the right, such as C<sub>L</sub>, C<sub>D</sub>, C<sub>Y</sub>, C<sub>l</sub>, C<sub>m</sub>, and C<sub>n</sub>. This would make the input-output format of the sparse database clear before showing coefficient trends.
-        </div>
-      </div>
+      <figure class="figure-block">
+        <img class="figure-image" src="fig2_178.png" alt="Sparse data table structure diagram" />
+      </figure>
       <p class="figure-caption">Figure 2. Recommended schematic of the sparse database format, showing how each sampled input state maps to aerodynamic coefficient outputs.</p>
 
       <h4>3.2 Constraints: why the dataset is sparse</h4>
@@ -500,13 +509,10 @@
         This constraint is important for interpreting the final surrogate. The surrogate should not be viewed as creating new high-fidelity physics from nothing. Instead, it learns from a limited set of aerodynamic anchor points. Its reliability depends on the quality, coverage, and consistency of those anchor points, as well as the smoothness of the underlying aerodynamic trends between them.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Figure 3: Sparse Versus Dense Sampling</strong>
-          Suggested diagram: a comparison between a dense grid and the selected sparse grid in a simplified two- or three-variable space. A strong version would show how the sparse dataset covers the major envelope while leaving unsampled gaps for the surrogate model to interpolate.
-        </div>
-      </div>
-      <p class="figure-caption">Figure 3. Recommended visualization comparing the selected sparse sampling strategy against a hypothetical dense aerodynamic database.</p>
+      <figure class="figure-block">
+        <img class="figure-image" src="fig3_178.png" alt="Sparse data format" />
+      </figure>
+      <p class="figure-caption">Figure 3. Selected sparse sampling domain vs. a more typical high density database.</p>
 
       <h4>3.3 Preparation: converting VSPAERO outputs into surrogate-ready data</h4>
       <p>
