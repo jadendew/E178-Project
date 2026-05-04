@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sparse Data Input</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: rgba(18, 18, 18, 0.92);
+      --panel-soft: rgba(32, 32, 34, 0.82);
+      --border: rgba(255, 255, 255, 0.15);
+      --text: #d4d4d4;
+      --muted: #9cdcfe;
+      --subtle: #b8b8b8;
+      --accent: #179fff;
+      --shadow: rgba(0, 0, 0, 0.48);
+      --black: #050505;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(23, 159, 255, 0.13), transparent 35%),
+        radial-gradient(circle at 90% 16%, rgba(0, 122, 204, 0.10), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      min-height: 58px;
+      padding: 0.7rem 6vw;
+      background: rgba(5, 5, 5, 0.94);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(18px);
+    }
+
+    .back-link {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 0.86rem;
+      padding: 0.38rem 0.6rem;
+      border-radius: 8px;
+      transition: background 160ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      background: rgba(255, 255, 255, 0.09);
+      outline: none;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 10vw));
+      margin: 0 auto;
+      padding: 2.4rem 0 5rem;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+      gap: 1.2rem;
+      align-items: stretch;
+      margin-bottom: 1.2rem;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      box-shadow: 0 28px 90px var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .kicker {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      font-weight: 760;
+      margin-bottom: 0.7rem;
+    }
+
+    h1 {
+      color: white;
+      font-size: clamp(2.2rem, 6vw, 5rem);
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      color: white;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      letter-spacing: -0.04em;
+      margin-bottom: 0.8rem;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.74);
+      margin-bottom: 1rem;
+    }
+
+    .visual-placeholder {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        rgba(5, 5, 5, 0.38);
+      background-size: 32px 32px;
+      border-radius: 20px;
+      border: 1px dashed rgba(255, 255, 255, 0.22);
+      color: var(--subtle);
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .latex-section {
+      margin: 1.2rem 0;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: clamp(1.4rem, 4vw, 3rem);
+      box-shadow: 0 28px 90px var(--shadow);
+      backdrop-filter: blur(18px);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.7;
+    }
+
+    .latex-section h2,
+    .latex-section h3,
+    .latex-section h4 {
+      color: white;
+      letter-spacing: normal;
+    }
+
+    .latex-section h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      margin-bottom: 0.8rem;
+    }
+
+    .latex-section h3 {
+      font-size: 1.35rem;
+      margin: 2rem 0 0.7rem;
+    }
+
+    .latex-section p,
+    .latex-section li {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: 1.02rem;
+    }
+
+    .latex-section ul {
+      color: rgba(255, 255, 255, 0.74);
+      margin: 0.75rem 0 1rem 1.35rem;
+    }
+
+    .equation-block {
+      margin: 1rem 0;
+      padding: 1rem;
+      text-align: center;
+      background: rgba(5, 5, 5, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 14px;
+      font-family: "Times New Roman", Georgia, serif;
+      font-size: 1.05rem;
+      color: white;
+      overflow-x: auto;
+    }
+
+    .coefficient-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.4rem;
+      overflow: hidden;
+      border-radius: 16px;
+      font-size: 0.96rem;
+    }
+
+    .coefficient-table th,
+    .coefficient-table td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.75rem;
+      vertical-align: top;
+    }
+
+    .coefficient-table th {
+      background: rgba(0, 122, 204, 0.28);
+      color: white;
+      text-align: left;
+    }
+
+    .coefficient-table td {
+      color: rgba(255, 255, 255, 0.74);
+      background: rgba(30, 30, 30, 0.58);
+    }
+
+    .figure-placeholder {
+      margin: 1.4rem 0;
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 2rem;
+      color: rgba(255, 255, 255, 0.78);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        rgba(30, 30, 30, 0.60);
+      background-size: 28px 28px;
+      border: 1px dashed rgba(255, 255, 255, 0.28);
+      border-radius: 16px;
+    }
+
+    .figure-placeholder strong {
+      display: block;
+      color: white;
+      font-size: 1.08rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .figure-caption {
+      margin-top: -0.7rem;
+      margin-bottom: 1.2rem;
+      color: rgba(255, 255, 255, 0.62) !important;
+      font-size: 0.92rem !important;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .next-step-card {
+      display: block;
+      margin-top: 2.2rem;
+      padding: 1.35rem 1.5rem;
+      background: rgba(23, 159, 255, 0.10);
+      border: 1px solid rgba(23, 159, 255, 0.28);
+      border-radius: 18px;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .next-step-card:hover,
+    .next-step-card:focus-visible {
+      transform: translateY(-3px);
+      background: rgba(23, 159, 255, 0.16);
+      border-color: rgba(23, 159, 255, 0.58);
+      outline: none;
+    }
+
+    .next-step-card .kicker-small {
+      display: block;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.72rem;
+      font-weight: 760;
+      margin-bottom: 0.45rem;
+    }
+
+    .next-step-card strong {
+      display: block;
+      color: white;
+      font-size: 1.25rem;
+      line-height: 1.25;
+      margin-bottom: 0.35rem;
+    }
+
+    .next-step-card p {
+      color: rgba(255, 255, 255, 0.72);
+      margin-bottom: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .mini-card {
+      background: rgba(5, 5, 5, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.1rem;
+    }
+
+    .mini-card h3 {
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .mini-card p {
+      color: var(--subtle);
+      font-size: 0.92rem;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 980px) {
+      main {
+        width: min(100% - 2rem, 1180px);
+        padding-top: 2.5rem;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      nav {
+        justify-content: flex-start;
+      }
+
+      .hero,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="back-link" href="index.html">← Back to Home</a>
+    <nav class="nav-links" aria-label="Sparse data page navigation">
+      <a href="#vspaero-tool">VSPAERO</a>
+      <a href="#sampling-domain">Sampling Domain</a>
+      <a href="#data-preparation">Data Inputs</a>
+      <a href="#coefficient-outputs">Coefficient Outputs</a>
+      <a href="#surrogate-workflow">Surrogate Workflow</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <article class="card">
+        <div class="kicker">Flowchart Step 01</div>
+        <h1>Sparse Data Input</h1>
+        <p>
+          This is a placeholder page for the sparse data input stage of the project. Replace this text with a description of what data is collected, why it is sparse, and how it enters the project workflow.
+        </p>
+        <p>
+          You can include datasets, collection constraints, sampling diagrams, source images, acquisition hardware, or preprocessing notes here.
+        </p>
+      </article>
+
+      <aside class="card visual-placeholder">
+        Replace this block with a figure, GIF, diagram, or data input visual.
+      </aside>
+    </section>
+
+    <section class="latex-section" aria-labelledby="vspaero-sparse-data-heading">
+      <h2 id="vspaero-sparse-data-heading">Sparse Aerodynamic Data Creation</h2>
+
+      <p>
+        This section describes the creation of the sparse aerodynamic database used as the input layer for the surrogate modeling workflow. The dataset was generated using <em>VSPAERO</em> over a selected envelope of flight attitude and control-surface states. Each sample point represents one aerodynamic evaluation of the aircraft at a prescribed Reynolds number, angle of attack, sideslip angle, and elevon configuration. The resulting coefficients provide a compact description of the aircraft's force and moment response at that condition.
+      </p>
+
+      <h3 id="vspaero-tool">1. VSPAERO as the Data-Generation Tool</h3>
+      <p>
+        VSPAERO is the aerodynamic solver distributed with OpenVSP. It is intended for rapid aerodynamic analysis of OpenVSP vehicle geometries, especially during conceptual and early-stage design. Unlike a full high-fidelity CFD workflow, where the user typically creates a volume mesh around the aircraft and solves the Navier-Stokes or Reynolds-averaged Navier-Stokes equations, VSPAERO uses a lower-order potential-flow formulation. This makes it much faster to run over many geometry, attitude, and control-input combinations, which is useful when the goal is to populate an aerodynamic database rather than resolve every detail of the flow field.
+      </p>
+
+      <p>
+        In this project, VSPAERO was used as a sweep engine: the aircraft geometry and reference quantities were held fixed while the flight and control variables were systematically varied. For each case, the solver produced nondimensional aerodynamic coefficients that could later be used for interpolation, surrogate model training, and flight-dynamics analysis. This makes VSPAERO well suited for the sparse-data stage of the project, because the workflow requires many coefficient evaluations over a structured design space.
+      </p>
+
+      <h4>Inputs to the VSPAERO workflow</h4>
+      <ul>
+        <li><strong>Aircraft geometry:</strong> the OpenVSP model or its aerodynamic representation, including lifting surfaces and elevon/control-surface definitions.</li>
+        <li><strong>Reference quantities:</strong> reference area, reference chord, reference span, and moment reference point used to nondimensionalize forces and moments.</li>
+        <li><strong>Flow condition:</strong> Reynolds number, freestream direction, angle of attack, sideslip angle, and related analysis settings.</li>
+        <li><strong>Control inputs:</strong> symmetric and differential elevon deflections, which represent different combinations of pitch and roll control authority.</li>
+      </ul>
+
+      <h4>Outputs used in this project</h4>
+      <p>
+        The main outputs used here were the integrated aerodynamic force and moment coefficients. These outputs are not simply raw forces and torques; they are nondimensionalized values that make the results easier to compare across conditions and easier to use inside flight-dynamics or surrogate-modeling pipelines.
+      </p>
+
+      <div class="figure-placeholder">
+        <div>
+          <strong>Placeholder Diagram A: VSPAERO Workflow</strong>
+          Suggested diagram: OpenVSP aircraft geometry &rarr; VSPAERO sweep setup &rarr; batch aerodynamic cases &rarr; coefficient table. This would help readers understand how the solver fits into the data-generation pipeline before the surrogate model is introduced.
+        </div>
+      </div>
+      <p class="figure-caption">Figure A. Recommended workflow diagram showing how OpenVSP geometry and sweep variables become an aerodynamic coefficient database.</p>
+
+      <h4>Why not only use CFD?</h4>
+      <p>
+        A CFD workflow is more appropriate when local flow details are important, such as boundary-layer behavior, shock structure, separated flow, viscous drag buildup, or detailed pressure distributions. However, CFD is usually more expensive to set up and run for large multidimensional sweeps. For this project, the immediate objective was to create a broad aerodynamic response map across many combinations of &alpha;, &beta;, and elevon deflection. VSPAERO provides a practical middle ground: it can rapidly generate approximate aerodynamic coefficients over a wide sweep space, while higher-fidelity CFD or wind-tunnel data could later be used to validate, correct, or enrich selected regions of the surrogate model.
+      </p>
+
+      <h3 id="sampling-domain">2. Sampling Domain</h3>
+      <p>
+        The sparse dataset was generated at a fixed Reynolds number of <strong>Re = 5 &times; 10<sup>5</sup></strong>. The aerodynamic state space was swept across angle of attack, sideslip angle, and elevon deflections. The selected intervals were chosen to cover a useful range of longitudinal, lateral-directional, and control-coupled behavior while keeping the total number of VSPAERO cases manageable.
+      </p>
+
+      <div class="equation-block">
+        <em>Re</em> = 5 &times; 10<sup>5</sup>, &nbsp;
+        &alpha; &isin; [&minus;20&deg;, 20&deg;], &nbsp;
+        &beta; &isin; [&minus;6&deg;, 6&deg;], &nbsp;
+        &delta;<sub>elevon</sub> &isin; [&minus;10&deg;, 10&deg;]
+      </div>
+
+      <ul>
+        <li><strong>Angle of attack, &alpha;:</strong> swept from &minus;20&deg; to +20&deg; using 21 sample points. This sweep captures the primary longitudinal variation in lift, drag, and pitching moment as the aircraft rotates nose-up or nose-down relative to the freestream.</li>
+        <li><strong>Sideslip angle, &beta;:</strong> swept from &minus;6&deg; to +6&deg; using 7 sample points. This sweep captures lateral-directional effects caused by the aircraft flying at a yawed angle relative to the incoming flow.</li>
+        <li><strong>Elevon deflections:</strong> each elevon was swept from &minus;10&deg; to +10&deg; using 21 sample points. These deflections alter the effective camber and loading of the trailing-edge control surfaces.</li>
+        <li><strong>Control mixing:</strong> elevon inputs were evaluated through combinations of symmetric and differential deflections. Symmetric deflection corresponds to both elevons moving in the same direction, while differential deflection corresponds to the elevons moving in opposite directions.</li>
+      </ul>
+
+      <p>
+        Symmetric elevon deflection is most closely associated with pitch control because both surfaces modify the aft-wing loading in the same direction. This tends to influence <strong>C<sub>L</sub></strong>, <strong>C<sub>D</sub></strong>, and especially <strong>C<sub>m</sub></strong>. Differential elevon deflection is most closely associated with roll control because one side of the aircraft experiences a different trailing-edge deflection than the other. This tends to influence <strong>C<sub>l</sub></strong> and may also introduce coupled effects in <strong>C<sub>Y</sub></strong> and <strong>C<sub>n</sub></strong>, depending on the aircraft geometry and flight condition.
+      </p>
+
+      <p>
+        Because the dataset is sparse, it does not represent every possible state in the continuous flight envelope. Instead, it provides a structured set of anchor points. The surrogate model can then learn or interpolate between these anchors to estimate aerodynamic coefficients at unsampled combinations of attitude and control input.
+      </p>
+
+      <div class="figure-placeholder">
+        <div>
+          <strong>Placeholder Figure 1: VSPAERO Sampling Grid</strong>
+          Suggested plot: a 3D scatter plot or heat-map matrix showing sampled combinations of &alpha;, &beta;, and elevon deflection. A useful version would show &alpha; on one axis, &beta; on another axis, and color or panels for symmetric/differential elevon deflection. This would make the sparseness and structure of the aerodynamic database visually obvious.
+        </div>
+      </div>
+      <p class="figure-caption">Figure 1. Recommended visualization of the aerodynamic sweep domain used to create the sparse data input.</p>
+
+      <h3 id="data-preparation">3. Data Inputs, Constraints, and Preparation</h3>
+      <p>
+        The sparse aerodynamic database can be understood as a structured collection of input conditions paired with aerodynamic coefficient outputs. The input side of the dataset defines the state of the aircraft and controls for each VSPAERO case. In this project, each sample is identified by a Reynolds number, angle of attack, sideslip angle, and elevon configuration. These values act as the independent variables that the surrogate model will later use to infer the aircraft's aerodynamic response.
+      </p>
+
+      <h4>3.1 Inputs: sampled aerodynamic states</h4>
+      <p>
+        The primary inputs are the sampled points in the aerodynamic/control space. Each point represents one specific flight and control condition, rather than a continuous flow-field solution. In practical terms, a single row of the sparse database may contain quantities such as <em>Re</em>, &alpha;, &beta;, left elevon deflection, right elevon deflection, symmetric elevon component, and differential elevon component. The corresponding output columns then contain the aerodynamic coefficients predicted by VSPAERO for that condition.
+      </p>
+
+      <p>
+        Because the dataset is generated from a defined sweep, the input values are not arbitrary. They are organized sample points chosen to cover the operating range of interest. The &alpha; samples describe how the aircraft behaves as it pitches relative to the freestream, the &beta; samples describe how the aircraft behaves in yawed flow, and the elevon samples describe how the aerodynamic response changes under pitch-like and roll-like control inputs. This makes the dataset especially useful for surrogate modeling because the model receives a clear mapping from control/flight inputs to aerodynamic outputs.
+      </p>
+
+      <div class="figure-placeholder">
+        <div>
+          <strong>Placeholder Figure 2: Sparse Data Table Structure</strong>
+          Suggested diagram: a table schematic showing input columns on the left, such as Re, &alpha;, &beta;, &delta;<sub>L</sub>, &delta;<sub>R</sub>, &delta;<sub>sym</sub>, and &delta;<sub>diff</sub>, and output columns on the right, such as C<sub>L</sub>, C<sub>D</sub>, C<sub>Y</sub>, C<sub>l</sub>, C<sub>m</sub>, and C<sub>n</sub>. This would make the input-output format of the sparse database clear before showing coefficient trends.
+        </div>
+      </div>
+      <p class="figure-caption">Figure 2. Recommended schematic of the sparse database format, showing how each sampled input state maps to aerodynamic coefficient outputs.</p>
+
+      <h4>3.2 Constraints: why the dataset is sparse</h4>
+      <p>
+        The dataset is intentionally sparse because the full aerodynamic response surface is multidimensional. Even with a relatively small number of variables, the number of possible combinations grows quickly. A dense grid over Reynolds number, angle of attack, sideslip, left elevon deflection, and right elevon deflection would require a large number of aerodynamic evaluations. This becomes especially costly if the same workflow is repeated for multiple geometries, model revisions, mesh settings, or validation cases.
+      </p>
+
+      <p>
+        Sparsity also reflects practical limits in aerodynamic data generation. Some regions of the envelope may be more important than others, some combinations may be less physically relevant, and lower-order tools such as VSPAERO may be most reliable within certain ranges of attached or moderately separated flow. As a result, the sweep is designed to capture the dominant trends while avoiding an unnecessarily dense brute-force database. The surrogate model is then responsible for filling in the unsampled regions in a controlled way.
+      </p>
+
+      <p>
+        This constraint is important for interpreting the final surrogate. The surrogate should not be viewed as creating new high-fidelity physics from nothing. Instead, it learns from a limited set of aerodynamic anchor points. Its reliability depends on the quality, coverage, and consistency of those anchor points, as well as the smoothness of the underlying aerodynamic trends between them.
+      </p>
+
+      <div class="figure-placeholder">
+        <div>
+          <strong>Placeholder Figure 3: Sparse Versus Dense Sampling</strong>
+          Suggested diagram: a comparison between a dense grid and the selected sparse grid in a simplified two- or three-variable space. A strong version would show how the sparse dataset covers the major envelope while leaving unsampled gaps for the surrogate model to interpolate.
+        </div>
+      </div>
+      <p class="figure-caption">Figure 3. Recommended visualization comparing the selected sparse sampling strategy against a hypothetical dense aerodynamic database.</p>
+
+      <h4>3.3 Preparation: converting VSPAERO outputs into surrogate-ready data</h4>
+      <p>
+        After the VSPAERO sweeps are completed, the raw outputs must be organized into a consistent dataset before they can be used for surrogate prediction. This preparation step includes collecting the coefficient outputs from each run, associating them with the correct input condition, and formatting the data into a table or array that can be read by the surrogate model. The preparation stage is where individual solver cases become a coherent aerodynamic database.
+      </p>
+
+      <p>
+        Important preparation tasks include checking that all intended cases completed successfully, verifying that sign conventions are consistent, confirming that symmetric and differential elevon definitions are applied correctly, and making sure each coefficient is paired with the correct input state. If duplicated points, failed solver cases, missing values, or inconsistent control labels are present, they should be identified before training or interpolation. This helps prevent the surrogate from learning artifacts caused by data formatting errors rather than actual aerodynamic behavior.
+      </p>
+
+      <p>
+        Preparation may also include light feature engineering. For example, left and right elevon deflections can be transformed into symmetric and differential components. This can make the control inputs more physically meaningful because symmetric deflection maps more naturally to pitch behavior, while differential deflection maps more naturally to roll behavior. The resulting surrogate inputs are therefore not just raw solver settings; they are organized variables chosen to reflect the aircraft's control structure.
+      </p>
+
+      <div class="figure-placeholder">
+        <div>
+          <strong>Placeholder Figure 4: Data Preparation Pipeline</strong>
+          Suggested diagram: raw VSPAERO case outputs &rarr; case validation &rarr; input/output table assembly &rarr; symmetric/differential control transformation &rarr; surrogate-ready dataset. This would clarify how the aerodynamic sweep results become usable training data.
+        </div>
+      </div>
+      <p class="figure-caption">Figure 4. Recommended preparation pipeline diagram showing how raw solver outputs are cleaned, checked, and formatted for surrogate modeling.</p>
+
+      <h3 id="coefficient-outputs">4. Aerodynamic Coefficient Outputs</h3>
+      <p>
+        For each VSPAERO run, six nondimensional aerodynamic coefficients were extracted:
+      </p>
+
+      <div class="equation-block">
+        { C<sub>L</sub>, C<sub>D</sub>, C<sub>Y</sub>, C<sub>l</sub>, C<sub>m</sub>, C<sub>n</sub> }
+      </div>
+
+      <p>
+        These coefficients describe the total aerodynamic forces and moments acting on the aircraft. The force coefficients, <strong>C<sub>L</sub></strong>, <strong>C<sub>D</sub></strong>, and <strong>C<sub>Y</sub></strong>, describe translation through the air, while the moment coefficients, <strong>C<sub>l</sub></strong>, <strong>C<sub>m</sub></strong>, and <strong>C<sub>n</sub></strong>, describe rotation about the aircraft body axes. Instead of treating these as isolated scalar outputs, the most useful interpretation comes from looking at how each coefficient changes as a function of angle of attack, sideslip, and elevon deflection.
+      </p>
+
+      <h4>4.1 Longitudinal coefficients: lift, drag, and pitching moment</h4>
+      <p>
+        The first group of outputs, <strong>C<sub>L</sub></strong>, <strong>C<sub>D</sub></strong>, and <strong>C<sub>m</sub></strong>, is most directly tied to longitudinal flight behavior. <strong>C<sub>L</sub></strong> indicates how much lift the vehicle produces as angle of attack changes. <strong>C<sub>D</sub></strong> captures the drag penalty associated with that flight condition and control state. <strong>C<sub>m</sub></strong> describes the pitching moment, which is important for trim and pitch stability. Plotting these three quantities against &alpha; provides a direct check on whether the VSPAERO-generated database behaves in a physically reasonable way.
+      </p>
+
+      <div class="figure-placeholder">
+        <div>
+          <strong>Placeholder Figure 5: Longitudinal Coefficient Trends Across Angle of Attack</strong>
+          Suggested plot: C<sub>L</sub>, C<sub>D</sub>, and C<sub>m</sub> versus &alpha; at representative &beta; and elevon settings. A useful version would overlay several symmetric elevon deflections so the reader can see how pitch-control input shifts the lift curve, drag buildup, and pitching-moment trend.
+        </div>
+      </div>
+      <p class="figure-caption">Figure 5. Recommended longitudinal coefficient plot showing lift, drag, and pitching-moment trends across the angle-of-attack sweep.</p>
+
+      <p>
+        Figure 5 should be read as the primary sanity check for the sparse aerodynamic data. A useful plot would show whether lift increases consistently over the expected range, whether drag grows as the aircraft moves toward higher-magnitude angles of attack, and whether the pitching-moment curve changes with symmetric elevon input. This figure is also useful for identifying regions where the surrogate model may need extra care, such as near high-&alpha; conditions where the response may become less linear or more sensitive to control deflection.
+      </p>
+
+      <h4>4.2 Control effectiveness: symmetric and differential elevon behavior</h4>
+      <p>
+        The elevon sweep was included because the project is not only interested in passive aerodynamic behavior, but also in how the aircraft responds to commanded control inputs. Symmetric elevon deflection primarily affects pitch-related behavior, especially <strong>C<sub>m</sub></strong>, because both trailing-edge surfaces move together and alter the overall longitudinal loading. Differential elevon deflection primarily affects roll-related behavior, especially <strong>C<sub>l</sub></strong>, because the left and right sides of the aircraft receive opposite control inputs.
+      </p>
+
+      <div class="figure-placeholder">
+        <div>
+          <strong>Placeholder Figure 6: Elevon Control-Deflection Effectiveness</strong>
+          Suggested plot: C<sub>m</sub> versus symmetric elevon deflection and C<sub>l</sub> versus differential elevon deflection, ideally at several representative &alpha; values. This would show both the sign and approximate strength of pitch and roll authority across the sampled control range.
+        </div>
+      </div>
+      <p class="figure-caption">Figure 6. Recommended control-effectiveness plot for connecting elevon deflection inputs to pitch and roll moment outputs.</p>
+
+      <p>
+        Figure 6 should sit directly next to the discussion of elevon mixing because it explains why both symmetric and differential control combinations were included in the sparse dataset. If <strong>C<sub>m</sub></strong> changes clearly with symmetric deflection, the data captures pitch-control authority. If <strong>C<sub>l</sub></strong> changes clearly with differential deflection, the data captures roll-control authority. The slopes of these relationships are especially important because they indicate how strongly each control input maps to an aircraft response. If the curves are nearly linear, the surrogate may be easier to train; if they show curvature or coupling, the surrogate needs enough structure to capture that behavior.
+      </p>
+
+      <h4>4.3 Lateral-directional coefficients: side force, roll moment, and yaw moment</h4>
+      <p>
+        The remaining coefficients, <strong>C<sub>Y</sub></strong>, <strong>C<sub>l</sub></strong>, and <strong>C<sub>n</sub></strong>, are most useful for understanding lateral-directional behavior. These outputs become especially important when the aircraft experiences sideslip. <strong>C<sub>Y</sub></strong> describes side force, <strong>C<sub>l</sub></strong> describes rolling moment, and <strong>C<sub>n</sub></strong> describes yawing moment. Looking at these coefficients versus &beta; helps reveal whether the aircraft has a stabilizing directional response and whether sideslip introduces roll-yaw coupling.
+      </p>
+
+      <div class="figure-placeholder">
+        <div>
+          <strong>Placeholder Figure 7: Lateral-Directional Response Versus Sideslip</strong>
+          Suggested plot: C<sub>Y</sub>, C<sub>l</sub>, and C<sub>n</sub> versus &beta; for neutral, symmetric, and differential elevon cases. This plot would show how sideslip affects side force, roll moment, and yaw moment, and whether elevon inputs introduce coupled lateral-directional behavior.
+        </div>
+      </div>
+      <p class="figure-caption">Figure 7. Recommended lateral-directional coefficient plot for understanding sideslip response and yaw-roll coupling.</p>
+
+      <p>
+        Figure 7 should be placed with the lateral-directional discussion because it connects the &beta; sweep to the coefficient outputs most affected by yawed flow. A useful version would compare neutral controls against representative symmetric and differential control cases. This would make it easier to see whether the aircraft response is dominated by sideslip alone or whether elevon deflection significantly changes side force, roll moment, or yaw moment. The figure can also highlight cross-coupling that may matter later in flight-dynamics modeling, such as a differential elevon input producing both roll and yaw effects.
+      </p>
+
+      <h4>4.4 Summary of coefficient roles</h4>
+      <table class="coefficient-table">
+        <thead>
+          <tr>
+            <th>Coefficient</th>
+            <th>Name</th>
+            <th>Aircraft relevance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>C<sub>L</sub></strong></td>
+            <td>Lift coefficient</td>
+            <td>Represents the aircraft's nondimensional lift force. It indicates how much upward aerodynamic force the configuration produces for a given flight condition. Variation of C<sub>L</sub> with &alpha; is one of the clearest indicators of longitudinal aerodynamic behavior and is important for trim, maneuvering, and estimating available lift margin.</td>
+          </tr>
+          <tr>
+            <td><strong>C<sub>D</sub></strong></td>
+            <td>Drag coefficient</td>
+            <td>Represents nondimensional aerodynamic drag. It is used to estimate the aerodynamic penalty of a given state or control input. Trends in C<sub>D</sub> help identify efficient operating regions, increased losses at high &alpha;, and possible drag penalties introduced by elevon deflection.</td>
+          </tr>
+          <tr>
+            <td><strong>C<sub>Y</sub></strong></td>
+            <td>Side-force coefficient</td>
+            <td>Represents lateral force generated when the aircraft is exposed to sideslip or asymmetric control effects. C<sub>Y</sub> is relevant for crosswind response, lateral-directional stability, and understanding how yawed flow produces side loading on the vehicle.</td>
+          </tr>
+          <tr>
+            <td><strong>C<sub>l</sub></strong></td>
+            <td>Rolling-moment coefficient</td>
+            <td>Represents moment about the aircraft body x-axis. It is especially relevant for differential elevon inputs because opposite deflections on left and right surfaces can create an imbalance in lift, producing roll authority. The sign and slope of C<sub>l</sub> with differential deflection indicate how effectively the aircraft can command roll.</td>
+          </tr>
+          <tr>
+            <td><strong>C<sub>m</sub></strong></td>
+            <td>Pitching-moment coefficient</td>
+            <td>Represents moment about the aircraft body y-axis. It is central to longitudinal stability and trim. The variation of C<sub>m</sub> with &alpha; helps indicate static pitch stability, while variation with symmetric elevon deflection indicates pitch-control authority.</td>
+          </tr>
+          <tr>
+            <td><strong>C<sub>n</sub></strong></td>
+            <td>Yawing-moment coefficient</td>
+            <td>Represents moment about the aircraft body z-axis. It is used to evaluate directional stability and yaw response. C<sub>n</sub> trends with &beta; help show whether the aircraft tends to yaw back into the relative wind or away from it, while differential control inputs may introduce yaw-roll coupling.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        The placement of Figures 5 through 7 is meant to move from the most intuitive aircraft behavior to the more coupled behavior. Figure 5 explains the baseline longitudinal response, Figure 6 isolates control authority from elevon deflection, and Figure 7 shows how lateral-directional coefficients vary with sideslip and control coupling. Together, these plots would make the sparse dataset easier to interpret before it is passed into the surrogate prediction stage.
+      </p>
+
+      <h3 id="surrogate-workflow">5. Purpose in the Surrogate Workflow</h3>
+      <p>
+        The VSPAERO results form the sparse input database for the surrogate prediction stage. Rather than evaluating the full continuous aerodynamic space directly, this workflow uses a finite set of sampled aerodynamic states to train or construct a surrogate model. The surrogate can then estimate aerodynamic coefficients at unsampled combinations of angle of attack, sideslip, and elevon deflection.
+      </p>
+
+      <p>
+        This approach is useful because the complete aerodynamic response surface is multidimensional. Even a moderate number of variables can quickly create a large number of possible cases. By using a sparse but structured dataset, the project can reduce the number of direct aerodynamic analyses while still preserving enough information to approximate trends across the operating envelope.
+      </p>
+
+      <a class="next-step-card" href="process.html" aria-label="Continue to Surrogate Data Prediction page">
+        <span class="kicker-small">Next step in the flowchart</span>
+        <strong>Surrogate Data Prediction &rarr;</strong>
+        <p>
+          Continue to the next stage, where the sparse VSPAERO coefficient database is used to estimate aerodynamic behavior at unsampled flight and control conditions.
+        </p>
+      </a>
+    </section>
+
+  </main>
+</body>
+</html>
