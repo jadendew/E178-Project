@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Homepage</title>
+
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: rgba(10, 10, 10, 0.76);
+      --panel-solid: rgba(18, 18, 18, 0.94);
+      --border: rgba(255, 255, 255, 0.16);
+      --text: #d4d4d4;
+      --muted: #9cdcfe;
+      --subtle: #b8b8b8;
+      --accent: #007acc;
+      --accent-hover: #179fff;
+      --shadow: rgba(0, 0, 0, 0.48);
+      --topbar-h: 56px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: #000;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: transparent;
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ------------------------------------------------------------------
+       Fixed background: the actual aircraft animation is the landing view.
+       ------------------------------------------------------------------ */
+
+    .gif-background {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      background: #000;
+      pointer-events: none;
+    }
+
+    .gif-background img,
+    .gif-background video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+      opacity: 1;
+      filter: saturate(0.98) contrast(1.04);
+      transition: opacity 180ms ease;
+    }
+
+    .gif-background::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.00) 38%, rgba(0, 0, 0, 0.42)),
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+      background-size: auto, 40px 40px, 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ------------------------------------------------------------------
+       Top nav
+       ------------------------------------------------------------------ */
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      min-height: var(--topbar-h);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.45rem 6vw;
+      background: rgba(5, 5, 5, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.34);
+    }
+
+    .brand {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.58rem;
+      color: white;
+      font-size: 0.88rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      opacity: 0.92;
+    }
+
+    .brand-mark {
+      width: 9px;
+      height: 9px;
+      background: var(--accent);
+      border-radius: 2px;
+      box-shadow: 0 0 14px rgba(0, 122, 204, 0.85);
+    }
+
+    nav {
+      justify-self: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.1rem;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.46rem 0.82rem;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.84rem;
+      opacity: 0.9;
+      transition: background 180ms ease, opacity 180ms ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+      background: rgba(255, 255, 255, 0.09);
+      opacity: 1;
+      outline: none;
+    }
+
+    /* ------------------------------------------------------------------
+       Scroll sections
+       ------------------------------------------------------------------ */
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: end;
+      padding: calc(var(--topbar-h) + 2rem) 6vw 3.5rem;
+      background: transparent;
+    }
+
+    .hero-card {
+      width: min(780px, 86vw);
+      padding: 0.85rem 1.05rem;
+      color: rgba(255, 255, 255, 0.94);
+      background: rgba(5, 5, 5, 0.46);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.46);
+    }
+
+    .hero-card h1 {
+      color: white;
+      font-size: clamp(1.25rem, 2.35vw, 2.0rem);
+      font-weight: 760;
+      letter-spacing: -0.04em;
+      line-height: 1.08;
+      margin-bottom: 0;
+    }
+
+    .hero-card p {
+      display: none;
+    }
+
+    .section {
+      min-height: 100vh;
+      padding: calc(var(--topbar-h) + 0.75rem) 2rem 0.9rem;
+      display: grid;
+      align-items: stretch;
+    }
+
+    .section-inner {
+      width: min(1820px, 100%);
+      margin: 0 auto;
+    }
+
+    /* ------------------------------------------------------------------
+       Media comparison section:
+       Side-by-side GIFs after the first scroll.
+       They are intentionally stretched/fitted to use the full card space.
+       ------------------------------------------------------------------ */
+
+    .media-section {
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(10px);
+    }
+
+    .media-results-layout {
+      height: calc(100vh - var(--topbar-h) - 1.65rem);
+      display: grid;
+      grid-template-columns: minmax(390px, 0.40fr) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      gap: 0.85rem;
+    }
+
+    .media-text-column {
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .media-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .combined-media-grid {
+      min-height: 0;
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    .combined-media-card {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    .combined-media-visual {
+      min-height: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: rgba(245, 245, 245, 0.98);
+    }
+
+    .combined-media-card img,
+    .combined-media-card video,
+    .combined-media-card .combined-media-visual > img,
+    .combined-media-card .combined-media-visual > video,
+    .combined-media-card img.combined-media-img,
+    .combined-media-card video.combined-media-img {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      background: #ffffff;
+      margin: 0 auto;
+    }
+
+    .media-card {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      overflow: hidden;
+      background: rgba(5, 5, 5, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 22px;
+      box-shadow: 0 24px 90px var(--shadow);
+    }
+
+    .media-card img,
+    .media-card video {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: block;
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /*
+      Fill mode:
+      - The flight and tracking GIFs are intentionally set to fill the boxes.
+      - This can stretch the plot GIF slightly, but it avoids unused whitespace.
+      - Change object-fit to "contain" if you prefer exact aspect ratio.
+    */
+    .media-card img.fill,
+    .media-card video.fill {
+      object-fit: fill;
+      object-position: center center;
+    }
+
+    .media-card-caption {
+      padding: 0.36rem 0.7rem;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(5, 5, 5, 0.88);
+      font-size: 0.78rem;
+      line-height: 1.18;
+    }
+
+    .compact-results-box {
+      min-height: 0;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      align-content: start;
+      gap: 0.50rem;
+      padding: 0.82rem 1.0rem;
+      background:
+        radial-gradient(circle at 88% 10%, rgba(0, 122, 204, 0.16), transparent 30%),
+        rgba(18, 18, 18, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 20px;
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    .compact-results-box h2 {
+      color: white;
+      font-size: clamp(1.30rem, 1.70vw, 1.84rem);
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      max-width: 100%;
+    }
+
+    .compact-results-box p {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: clamp(0.755rem, 0.795vw, 0.92rem);
+      line-height: 1.255;
+      max-width: 100%;
+      margin: 0;
+    }
+
+    .compact-results-box p + p {
+      margin-top: 0.28rem;
+      padding-top: 0.28rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    /* ------------------------------------------------------------------
+       Tests / explanation section
+       ------------------------------------------------------------------ */
+
+    .tests-section {
+      background: rgba(5, 5, 5, 0.84);
+    }
+
+    .text-panel {
+      min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 1.25rem;
+      align-items: stretch;
+      padding: clamp(1.2rem, 2.5vw, 2rem);
+      background:
+        radial-gradient(circle at 85% 10%, rgba(0, 122, 204, 0.18), transparent 32%),
+        rgba(18, 18, 18, 0.90);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 26px;
+      box-shadow: 0 28px 95px rgba(0, 0, 0, 0.5);
+    }
+
+    .text-panel-main {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .section-kicker {
+      color: var(--accent-hover);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.66rem;
+      font-weight: 760;
+      margin-bottom: 0.18rem;
+    }
+
+    .text-panel h2 {
+      color: white;
+      font-size: clamp(2rem, 4vw, 4rem);
+      letter-spacing: -0.06em;
+      line-height: 0.98;
+      margin-bottom: 1rem;
+    }
+
+    .text-panel p {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: clamp(1rem, 1.4vw, 1.16rem);
+      max-width: 70ch;
+      margin-bottom: 1rem;
+    }
+
+    .tests-notes {
+      width: 100%;
+      min-height: 100%;
+      padding: 1.25rem;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(5, 5, 5, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      font: inherit;
+      outline: none;
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .tests-notes h3 {
+      color: white;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tests-notes p {
+      margin-bottom: 0.85rem;
+    }
+
+    /* ------------------------------------------------------------------
+       Process / flowchart section
+       ------------------------------------------------------------------ */
+
+    .process-section {
+      background: rgba(0, 0, 0, 0.78);
+    }
+
+    .flowchart-panel {
+      min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+      padding: clamp(1.2rem, 2.4vw, 2rem);
+      background: rgba(18, 18, 18, 0.90);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 26px;
+      box-shadow: 0 28px 95px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .flowchart-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .flowchart-header h2 {
+      color: white;
+      font-size: clamp(2rem, 3.2vw, 3.8rem);
+      font-weight: 760;
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .flowchart-header p {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 0.95rem;
+      text-align: right;
+    }
+
+    .flowchart {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1fr) 70px minmax(0, 1fr);
+      align-items: stretch;
+      gap: 0.9rem;
+    }
+
+    .flow-step {
+      display: block;
+      background: rgba(30, 30, 30, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .flow-step:hover,
+    .flow-step:focus-visible {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.38);
+      background: rgba(36, 36, 40, 0.95);
+      outline: none;
+    }
+
+    .flow-step img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      display: block;
+      background: rgba(30, 30, 30, 0.82);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .flow-step-content {
+      padding: 1rem;
+    }
+
+    .flow-step-page {
+      display: inline-block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 760;
+      margin-bottom: 0.3rem;
+    }
+
+    .flow-step h3 {
+      color: white;
+      font-size: 1.08rem;
+      line-height: 1.25;
+      margin-bottom: 0.24rem;
+    }
+
+    .flow-step p {
+      color: var(--subtle);
+      font-size: 0.9rem;
+      line-height: 1.38;
+    }
+
+    .flow-arrow {
+      display: grid;
+      place-items: center;
+      align-self: center;
+      height: 70px;
+      color: white;
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      user-select: none;
+    }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255, 255, 255, 0.13);
+      padding: 2rem 6vw;
+      color: var(--subtle);
+      background: rgba(5, 5, 5, 0.92);
+      backdrop-filter: blur(18px);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1050px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 0.3rem;
+        padding: 0.55rem 4vw;
+      }
+
+      .brand {
+        justify-self: center;
+      }
+
+      nav {
+        width: 100%;
+        overflow-x: auto;
+        justify-content: center;
+        padding-bottom: 0.1rem;
+      }
+
+      :root {
+        --topbar-h: 88px;
+      }
+
+      .media-grid,
+      .text-panel,
+      .flowchart {
+        grid-template-columns: 1fr;
+      }
+
+      .media-results-layout {
+        height: auto;
+        min-height: calc(100vh - var(--topbar-h) - 3.35rem);
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(300px, 1fr);
+      }
+
+      .media-text-column {
+        height: auto;
+        overflow: visible;
+      }
+
+      .media-grid {
+        grid-template-rows: minmax(240px, 1fr);
+      }
+
+      .compact-results-box {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .flow-arrow {
+        width: 88px;
+        height: 52px;
+        justify-self: center;
+        transform: rotate(90deg);
+      }
+
+      .text-panel {
+        min-height: auto;
+      }
+
+      .tests-notes {
+        min-height: 320px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .media-grid {
+        grid-template-rows: minmax(300px, 1fr) minmax(300px, 1fr);
+      }
+
+      .flow-step img {
+        height: 120px;
+      }
+    }
+  
+    /* FINAL OVERRIDE: preserve combined GIF aspect ratio.
+       Keep the card/section height, center the GIF, and allow white bars. */
+    .combined-media-card {
+      width: 100%;
+      height: 100%;
+      display: grid !important;
+      grid-template-rows: minmax(0, 1fr) auto !important;
+      overflow: hidden;
+    }
+
+    .combined-media-visual {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: hidden;
+      background: #ffffff !important;
+    }
+
+    .combined-media-card .combined-media-visual > img,
+    .combined-media-card .combined-media-visual > video,
+    .combined-media-card img.combined-media-img,
+    .combined-media-card video.combined-media-img {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: contain !important;
+      object-position: center center !important;
+      display: block !important;
+      margin: 0 auto !important;
+      background: #ffffff !important;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="gif-background" aria-hidden="true">
+    <video id="heroVideo" muted playsinline loop preload="auto" poster="assets/mpc_v2_animation.gif">
+      <source src="assets/mpc_v2_animation.mp4" type="video/mp4" />
+    </video>
+    <img id="heroGifFallback" src="assets/mpc_v2_animation.gif" alt="" />
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Project homepage">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>AeroTelligence</span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <a class="nav-link" href="overview.html">Background and Motivation</a>
+      <a class="nav-link" href="sparse-data-input.html">Aerodynamic Data Generation</a>
+      <a class="nav-link" href="process.html">Regression Process and Results</a>
+      <a class="nav-link" href="results.html">Controller Results</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="MPC aircraft animation hero">
+      <div class="hero-card">
+        <h1>Surrogate-Based MPC Control of a Fixed-Thrust Flying Wing</h1>
+      </div>
+    </section>
+
+    <section id="tracking" class="section media-section" aria-label="Flight, tracking, and results explanation">
+      <div class="section-inner">
+        <div class="media-results-layout">
+          <div class="compact-results-box media-text-column" aria-label="Short results explanation">
+            <div>
+              <div class="section-kicker">Overview</div>
+              <h2>Fancy Result: Surrogate Model Based Control</h2>
+            </div>
+
+            <p>
+              Surrogate modeling in the field of computational fluid dynamics (CFD) is the process of replacing costly simulation with data driven
+              ML models to predict aerodynamic data at a lower cost. This practice has become increasingly popular in both research and industry in recent years
+              for applications where data is needed quickly and in large quantities where greater error bands are acceptable, such as in control or design iteration.
+              Given that the members of our group all work in aerospace or aerospace related fields we wanted to see if we could use the knowledge we have gained from E178
+              to create a surrogate model and apply it to an aircraft control problem.
+            </p>
+
+            <p>
+              To create this surrogate model we utilized multiple regression frameworks to train a predictor that can take in 4 positional and control surface
+              angles and map those values to 6 aerodynamic force and moment coefficients acting on the aircraft anywhere in 3D space. We trained this model on sparse
+              aerodynamic data generated in NASA made panel method solver OpenVSP for a flying wing aircraft. We then used this data to create three different
+              regression frameworks. These frameworks included a Multi-Output Linear Regression, Gradient Boosted Trees algorithm, and a Multi-Layer Perceptron
+              neural network (MLP), the best of which we used for our controller. We then took this model and used as the dynamics solver and predictor within a Model Predictive Control (MPC)
+              framework able to control the trajectory of the aircraft. The results of this control integration can be seen in the animation to the right with the controller being
+              able to successfully achieve the desired control goal. This demonstrates the accuracy of our final regression model as well as demonstrating the practical application
+              of creating a surrogate model with the techniques learned in this class.
+              </p>
+              <p>
+               Each step of this process is detailed in the diagram below, click on the steps that interest you to learn more! 
+            </p>
+          </div>
+
+          <div class="media-grid combined-media-grid">
+            <article class="media-card combined-media-card">
+              <div class="combined-media-visual">
+                <img
+                  id="combinedTrackingGif"
+                  class="combined-media-img"
+                  src="assets/mpc_v2_csv_synced_flight_tracking.gif"
+                  alt="Synchronized MPC flight animation and attitude tracking"
+                />
+              </div>
+              <div class="media-card-caption">Synchronized MPC Flight Animation and Attitude Tracking</div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="process-flow" class="section process-section" aria-label="Project process flowchart">
+      <div class="section-inner">
+        <section class="flowchart-panel" aria-label="Project flowchart">
+          <div class="flowchart-header">
+            <h2>Project Flow</h2>
+            <p>Click a step to open its page.</p>
+          </div>
+
+          <div class="flowchart" aria-label="Project flowchart">
+            <a class="flow-step" href="sparse-data-input.html">
+              <img src="assets/flow-input.jpg" alt="Sparse data input illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Sparse Data Generation</span>
+                <h3>Sparse Data Generation and Input</h3>
+                <p>Data generation from OpenVSP simulation.</p>
+              </div>
+            </a>
+
+            <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
+
+            <a class="flow-step" href="process.html">
+              <img src="assets/wmlp_convergence.gif" alt="Surrogate data prediction illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Model Creation Process</span>
+                <h3>Surrogate Model Process and Results</h3>
+                <p>Creation, evaluation, and selection of the regression based surrogate model.</p>
+              </div>
+            </a>
+
+            <div class="flow-arrow" aria-hidden="true"><span>→</span></div>
+
+            <a class="flow-step" href="results.html">
+              <img src="assets/ResultsPlaceholder.png" alt="Surrogate data application illustration" />
+              <div class="flow-step-content">
+                <span class="flow-step-page">Surrogate Model Based Control Results</span>
+                <h3>Surrogate Model Application and Results</h3>
+                <p>Use the regression based surrogate model in an aircraft control problem.</p>
+              </div>
+            </a>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 AeroTelligence. Group 14</p>
+  </footer>
+
+  <script>
+    const heroVideo = document.getElementById("heroVideo");
+    const heroGif = document.getElementById("heroGif");
+    const heroGifFallback = document.getElementById("heroGifFallback");
+
+    function updateBackgroundFade() {
+      const y = window.scrollY || window.pageYOffset;
+      const fadeStart = window.innerHeight * 0.55;
+      const fadeEnd = window.innerHeight * 1.10;
+
+      let opacity = 1.0;
+      if (y > fadeStart) {
+        const p = Math.min(1, (y - fadeStart) / Math.max(1, fadeEnd - fadeStart));
+        opacity = 1.0 - 0.55 * p;
+      }
+
+      if (heroVideo) heroVideo.style.opacity = String(opacity);
+      if (heroGif) heroGif.style.opacity = String(opacity);
+      if (heroGifFallback) heroGifFallback.style.opacity = String(opacity);
+    }
+
+    window.addEventListener("load", updateBackgroundFade);
+    window.addEventListener("scroll", updateBackgroundFade, { passive: true });
+    window.addEventListener("resize", updateBackgroundFade);
+  </script>
+</body>
+</html>
