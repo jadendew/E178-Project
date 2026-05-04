@@ -348,7 +348,7 @@
         <section class="section-grid">
             
             <article class="card full">
-                <h1>Aerodynamic Data Processing</h1>
+                <h1>Surrogate Model Process and Results</h1>
                 <h2 style='font-size:24px'>Creating, training, and evaluating machine learning models for our use case. </h2>
                 <p> 
                     With a data-set of around 4000 vectors we have multiple different approaches of creating a model that 
@@ -356,7 +356,8 @@
                     different machine learning models. The process will follow these 6 steps.  
                     <ol> 
                     <li> Load the data from the master sheets. </li>
-                    <li> Scramble the ordered data from the mastersheet into a new shuffled csv file. </li>
+                    <li> Scramble the ordered data from the mastersheets. </li>
+                    <li> Sort the data into train, validate, and test sets.</li>
                     <li> Normalize the data. </li> 
                     <li> Organize and fit our data into input sequences and output values. </li>
                     <li> Build train and evaluate the three model. </li>
@@ -391,13 +392,13 @@
                         simultaneously. However it was only done for a select few configurations only yielding around 2000 distinct 
                         cases as compared to the 200,000 cases need to fully populate all points in the vector spaces. 
                     </li>
+                    <li>
+                      This data will be exclusivley used to test on to determine how well our model is at predicting the points which
+                      would otherwise be left empty in the simulation table. It will be cut in with the test portion of the master sheet 
+                      data at a ratio of 2/3 <i> aero_nonposed_cleaned.csv</i> data and 1/3 of the <i>aero_master.csv</i> data.
+                    </li>
                 </ul>
-                <p> 
-                    This data will be exclusivley used to test on to determine how well our model is at predicting the points which
-                    would otherwise be left empty in the simulation table. It will be cut in with the test portion of the master sheet 
-                    data at a ration of 2/3 <i> aero_nonposed_cleaned.csv</i> 1/3 of the <i>aero_master.csv</i> data.
-                </p>
-                
+
                 <h3> We then load the data with the Pandas package and continue. </h3>
 
                 <pre style="background: rgba(0, 0, 0, 0.4); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; margin-bottom: 1.5rem;"><code style="font-family: Consolas, Monaco, 'Courier New', monospace; color: var(--muted); font-size: 0.9rem;">rawDat = pd.read_csv('aero_autosweep.csv')
@@ -436,7 +437,7 @@ shuffledTest = testDat.sample(frac=1, random_state=67).reset_index(drop=True).to
                 </p>
 
                 <p> 
-                    For this specific use case we will do a standard split of 70% train, 20% validate, and 10% test data.
+                    For this specific use case we will do a standard split of 70% train, 10% validate, and 20% test data.
                     We only do this for the noposed data as that will be used purely for testing, we will insert it into
                     the created test dataset after it has been split.
                 </p>
@@ -496,18 +497,18 @@ yScaler = StandardScaler()</code></pre>
 
             <article class="card full"> 
                 <h1> 6. Training and testing our models </h1>
-                <p> We will be training and testing the following models </p>
+                <p> We will be training and testing the following models: </p>
                 <ul> 
-                    <li> Multivariate linear regression </li>
+                    <li> Multivariate Linear Regression </li>
                     <li> Gradient Boosted Trees </li>
-                    <li> Mulit Perceptron Neural Network (MLP) </li>
+                    <li> Multi-Layer Perceptron Neural Network (MLP) </li>
                 </ul>
             </article>
 
             <article id = "linreg" class="card full"> 
                 
                 <div class="kicker">Multivariate Linear Regression</div>    
-                <h2> 6.1 Building multivariate linear regression</h2>
+                <h2> 6.1 Building Multivariate Linear Regression</h2>
                 <p> 
                     This will be our simplest model to act as a baseline to compare all of our other models to. 
                     We know that some of our parameters should exhibit a <b>linear</b> relationship with attitude, 
@@ -540,9 +541,12 @@ yScaler = StandardScaler()</code></pre>
             <article id = "gbt" class="card full"> 
                 
                 <div class="kicker">Gradient Boosted Trees</div>    
-                <h2> 6.2 Building gradient boosted trees </h2>
+                <h2> 6.2 Building Gradient Boosted Trees </h2>
                 <p> 
-                    Gradient boosted trees is an ensamble regression method that utilizes sequential decision tree creation along with gradient descent to minimize loss when adding new models. However in order to get a good model gradient boosted trees requires extensive hyperparameter tuning. This model is particularly useful for our data as it works very well with tabular data and is much simpler to run than a neural network.
+                    Gradient boosted trees is an ensamble regression method that utilizes sequential decision tree creation along with 
+                    gradient descent to minimize loss when adding new models. However in order to get a good model gradient boosted 
+                    trees requires extensive hyperparameter tuning. This model is particularly useful for our data as it works very 
+                    well with tabular data and is much simpler to run than a neural network.
                 </p>
 
                 <h2> 6.2.1 Regularization </h2>
@@ -552,7 +556,9 @@ yScaler = StandardScaler()</code></pre>
                     generalizable patterns, not the the random fluctuations and noise. 
                 </p>
                 <p> 
-                    Because gradient boosted trees utilizes decision trees, we can't use standard ridge or lasso regularization to prevent the model from overfitting. The weights applied simply do not work with this model, however we can use min_samples_leaf and max_depth to control the fitting.
+                    Because gradient boosted trees utilizes decision trees, we can't use standard ridge or lasso regularization to prevent the model 
+                    from overfitting. The weights applied simply do not work with this model, however we can use min_samples_leaf and 
+                    max_depth to control the fitting.
                 </p>
                 <img src="assets/param_def.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 750px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
 
@@ -608,17 +614,17 @@ yScaler = StandardScaler()</code></pre>
                 </ul>
                 <img src="assets/mlp_init.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 750px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
                     
-                <h2> 6.3.2 Converting our data into torch tensors</h2>
+                <h2> 6.3.2 Converting our data into PyTorch tensors</h2>
                 <p> 
                     The nature of these neural networks require our data to be converted into tensors. We convert 
                     the data then shove it into a dataloader that creates batches of 32.
                 </p>
                 <img src="assets/tensor_def.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 750px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
 
-                <h2> 6.3.3 Traning the MLP </h2>
-                <p> The training constists of three steps: </p>
+                <h2> 6.3.3 Training the MLP </h2>
+                <p> Training constists of three steps: </p>
                 <ol> 
-                    <li> Setup Phase</li>
+                    <li> Setup Phase:</li>
                         <ul> 
                             <p> 
                                 We setup the training algorithm by first creating our optimizer optim.Adam() and our 
@@ -626,7 +632,7 @@ yScaler = StandardScaler()</code></pre>
                                 minimize error. We also define our epochs, in this case 500 epochs.
                             </p>
                         </ul>
-                    <li> Training Phase </li>
+                    <li> Training Phase: </li>
                         <ul> 
                             <li> 
                                 The trainer makes a forward pass with pred = modelSrnn(xb). The model looks at the 
@@ -639,7 +645,7 @@ yScaler = StandardScaler()</code></pre>
                                 these changes and the model gets better.
                             </li>
                         </ul>
-                    <li> Evaluation Phase </li>
+                    <li> Evaluation Phase: </li>
                         <ul> 
                             <li> 
                                 PyTorch model processes data as tensors with Tensor.cpu() The training concludes 
@@ -675,11 +681,11 @@ yScaler = StandardScaler()</code></pre>
                 <p> 
                     Now that all of our models have been trained we are ready to start our comparison and evaluation
                     metrics to see how well our models perform in analyzing our aero parameter data. We will first get
-                    baseline metric from each model with <b> MAE </b>, <b> NRMSE</b>, and <b> Coefficient of 
+                    baseline metric from each model with <b> MAE </b>, <b>NMAE</b>, <b> NRMSE</b>, and <b> Coefficient of 
                     determination </b> (<i>R<sup>2</sup></i>)
                 </p>
 
-                <h2> 7. Getting MAE baseline for each model</h2>
+                <h2> 7.1 Getting MAE baseline for each model</h2>
                     <h3> Why use MAE? </h3>
                     <p> 
                         Mean Absolute Error is a simple way to measure how far off our model's predictions are from 
@@ -687,7 +693,86 @@ yScaler = StandardScaler()</code></pre>
                         easy to interperet and good for direct comparison between models as it doesn't add artificial 
                         penalties to outliers (like MSE). 
                     </p>
-            
+
+                    <h3> Raw MAE values by model.</h3>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    
+                      <img src="assets/linreg_maeval.png"
+                          style="width: 30%; border-radius: 8px; border: 1px solid #30363d;">
+                      <img src="assets/gbt_maeval.png"
+                          style="width: 30%; border-radius: 8px; border: 1px solid #30363d;">
+                      <img src="assets/wmlp_maeval.png"
+                          style="width: 30%; border-radius: 8px; border: 1px solid #30363d;">
+                      
+                    </div>
+                    
+                    <h3> Notes: </h3>
+                    <ul>
+                      <li>
+                        Multivariate Linear Regression: Did very well in C<Sub>D</Sub>, having the lowest MAE out 
+                        off all of the models, similarly C<sub>m</sub> performed roughly as well as the much more complicated
+                        models. This makes sense as these are the two relationships we highlighted as known linear relationships.
+                        Multivariate Linear Regression did not do very well in all other metrics however, with a very poor 
+                        C<sub>D</sub> MAE.
+                      </li>
+                      <li>
+                        Gradient Boosted Trees: Saw great improvement in MAE over the linear regression in all outputs, for a 
+                        simple model it captures the behavior of the relationships remarkably well.
+                      </li>
+                      <li> 
+                        Multi-Layer Perceptron (MLP): Very low MAE, saw great improvments over the GBT algorithm
+                        which already had good results. Based on MAE metric this is our clear winner.
+                      </li>
+                    </ul>
+                <h2>7.2 Further evaluation and comparison </h2>
+                  <p>
+                     While MAE is a good metric for getting the relative performance for each model it doesn't exactly
+                    tell the whole story. Firstly MAE is scale dependent, a value of 0.03 could be really great if the 
+                    range of values goes from 0-1000, if its 0-0.05 it could be really bad. So we know how well the models
+                    did against eachother, but we don't know if they actually predicted our parameters well. Second, MAE 
+                    doesn't account for large errors. If we have large sweeping errors on each side of our ideal line, we 
+                    could still see a great MAE even if the model is performing terribly as the large opposing values would
+                    cancel eachother out. 
+                  </p>
+
+                  <h3> Expanding our evaluation metrics</h3>
+                  <ul>
+                    <li> 
+                      <b>NMAE</b>: We will use this for our <u>Multivariate Linear Regression</u> as it doesn't stray to far 
+                      from our original MAE evaluation metric but normalizes the data so that we can get an idea on
+                      how well the model is doing against the actual relationship, not just against other models.
+                    </li>
+                    <li>
+                      <b>NRMSE</b>: We will use this for our <u>Gradient Boosted Trees</u> and <u>MLP</u> models. It 
+                      works well for these two because it handles all of the issues that we had with MAE, it normalizes
+                      the data so we can better tell how the model is actually doing. It imparts a square penalty so that
+                      outliers will decrease its score more adequately, and the root will increase its intelligibility. 
+                    </li>
+                    <li> 
+                      <b> Coefficient of determination </b> (<i>R<sup>2</sup></i>): We will use this for all of our methods
+                      as it acts as an additional, more intelligible version of MAE in that it is useful for comparing 
+                      the performance of each model <i>to eachother</i>. 
+                    </li>
+                  </ul>
+                  <br>
+                
+                <h2> 7.3 Multivariate Linear Regression Evaluation</h2>
+                  <h3>7.3.1 Evaluation Plot</h3>
+                  <img src="assets/linreg_plot.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 1000px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
+                  <br>
+
+                <h2> 7.4 Gradient Boosted Trees Evaluation </h2>
+                  <h3> 7.4.1 Evaluation Plot </h3>
+                  <img src="assets/gbt_plot.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 1000px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
+                  <h3> 7.4.2 Convergence Plot</h3>
+                  <img src="assets/gbt_convergence.gif" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 1000px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
+                  <br>
+
+                <h2> 7.5 Multi-Layer Perceptron Evaluation </h2>
+                  <h3> 7.5.1 Evaluation Plot </h3>
+                  <img src="assets/mlp_plot.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 1000px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
+                  <h3> 7.5.2 Convergence Plot</h3>
+                  <img src="assets/wmlp_convergence.gif" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 1000px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
             </article>
 
 
