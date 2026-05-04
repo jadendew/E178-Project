@@ -438,7 +438,7 @@
       <figure class="figure-block">
         <img class="figure-image" src="assets/figA_178.PNG" alt="VSPAERO workflow diagram" />
       </figure>
-      <p class="figure-caption">Figure A. Recommended workflow diagram showing how OpenVSP geometry and sweep variables become an aerodynamic coefficient database.</p>
+      <p class="figure-caption">Figure A. VSP geometry, sweep variables to aerodynamic coefficient database pipeline. </p>
 
       <h4>Why not only use CFD?</h4>
       <p>
@@ -475,7 +475,7 @@
       <figure class="figure-block">
         <img class="figure-image" src="assets/fig1_178.PNG" alt="VSPAERO sampling grid visualization" />
       </figure>
-      <p class="figure-caption">Figure 1. Recommended visualization of the aerodynamic sweep domain used to create the sparse data input.</p>
+      <p class="figure-caption">Figure 1. Aerodynamic sweep domain used to create the sparse data input.</p>
 
       <h3 id="data-preparation">3. Data Inputs, Constraints, and Preparation</h3>
       <p>
@@ -494,7 +494,7 @@
       <figure class="figure-block">
         <img class="figure-image" src="assets/fig2_178.PNG" alt="Sparse data table structure diagram" />
       </figure>
-      <p class="figure-caption">Figure 2. Recommended schematic of the sparse database format, showing how each sampled input state maps to aerodynamic coefficient outputs.</p>
+      <p class="figure-caption">Figure 2. Schematic of the sparse database format- each sampled input state maps to aerodynamic coefficient outputs.</p>
 
       <h4>3.2 Constraints: why the dataset is sparse</h4>
       <p>
@@ -512,7 +512,7 @@
       <figure class="figure-block">
         <img class="figure-image" src="assets/fig3_178.PNG" alt="Sparse versus dense sampling visualization" />
       </figure>
-      <p class="figure-caption">Figure 3. Recommended visualization comparing the selected sparse sampling strategy against a hypothetical dense aerodynamic database.</p>
+      <p class="figure-caption">Figure 3. Sparse sampling strategy v. hypothetical dense aerodynamic database.</p>
 
       <h4>3.3 Preparation: converting VSPAERO outputs into surrogate-ready data</h4>
       <p>
@@ -548,7 +548,7 @@
       <figure class="figure-block">
         <img class="figure-image" src="assets/fig5_178.PNG" alt="Longitudinal coefficient trends across angle of attack" />
       </figure>
-      <p class="figure-caption">Figure 5. Recommended longitudinal coefficient plot showing lift, drag, and pitching-moment trends across the angle-of-attack sweep.</p>
+      <p class="figure-caption">Figure 4. Longitudinal coefficient plot- lift, drag, pitching-moment trends v. angle-of-attack sweep.</p>
 
       <p>
         Figure 5 should be read as the primary sanity check for the sparse aerodynamic data. A useful plot would show whether lift increases consistently over the expected range, whether drag grows as the aircraft moves toward higher-magnitude angles of attack, and whether the pitching-moment curve changes with symmetric elevon input. This figure is also useful for identifying regions where the surrogate model may need extra care, such as near high-&alpha; conditions where the response may become less linear or more sensitive to control deflection.
@@ -562,7 +562,7 @@
       <figure class="figure-block">
         <img class="figure-image" src="assets/fig6_178.PNG" alt="Elevon control deflection effectiveness plot" />
       </figure>
-      <p class="figure-caption">Figure 6. Recommended control-effectiveness plot for connecting elevon deflection inputs to pitch and roll moment outputs.</p>
+      <p class="figure-caption">Figure 6. Control-effectiveness plot. </p>
 
       <p>
         Figure 6 should sit directly next to the discussion of elevon mixing because it explains why both symmetric and differential control combinations were included in the sparse dataset. If <strong>C<sub>m</sub></strong> changes clearly with symmetric deflection, the data captures pitch-control authority. If <strong>C<sub>l</sub></strong> changes clearly with differential deflection, the data captures roll-control authority. The slopes of these relationships are especially important because they indicate how strongly each control input maps to an aircraft response. If the curves are nearly linear, the surrogate may be easier to train; if they show curvature or coupling, the surrogate needs enough structure to capture that behavior.
@@ -576,7 +576,7 @@
       <figure class="figure-block">
         <img class="figure-image" src="assets/fig7_178.PNG" alt="Lateral directional response versus sideslip plot" />
       </figure>
-      <p class="figure-caption">Figure 7. Recommended lateral-directional coefficient plot for understanding sideslip response and yaw-roll coupling.</p>
+      <p class="figure-caption">Figure 7. Lateral-directional coefficient plot- sideslip response, yaw-roll coupling.</p>
 
       <p>
         Figure 7 should be placed with the lateral-directional discussion because it connects the &beta; sweep to the coefficient outputs most affected by yawed flow. A useful version would compare neutral controls against representative symmetric and differential control cases. This would make it easier to see whether the aircraft response is dominated by sideslip alone or whether elevon deflection significantly changes side force, roll moment, or yaw moment. The figure can also highlight cross-coupling that may matter later in flight-dynamics modeling, such as a differential elevon input producing both roll and yaw effects.
