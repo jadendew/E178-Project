@@ -521,14 +521,6 @@
         Preparation may also include light feature engineering. For example, left and right elevon deflections can be transformed into symmetric and differential components. This can make the control inputs more physically meaningful because symmetric deflection maps more naturally to pitch behavior, while differential deflection maps more naturally to roll behavior. The resulting surrogate inputs are therefore not just raw solver settings; they are organized variables chosen to reflect the aircraft's control structure.
       </p>
 
-      <div class="figure-placeholder">
-        <div>
-          <strong>Placeholder Figure 4: Data Preparation Pipeline</strong>
-          Suggested diagram: raw VSPAERO case outputs &rarr; case validation &rarr; input/output table assembly &rarr; symmetric/differential control transformation &rarr; surrogate-ready dataset. This would clarify how the aerodynamic sweep results become usable training data.
-        </div>
-      </div>
-      <p class="figure-caption">Figure 4. Recommended preparation pipeline diagram showing how raw solver outputs are cleaned, checked, and formatted for surrogate modeling.</p>
-
       <h3 id="coefficient-outputs">4. Aerodynamic Coefficient Outputs</h3>
       <p>
         For each VSPAERO run, six nondimensional aerodynamic coefficients were extracted:
