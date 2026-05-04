@@ -363,7 +363,7 @@
 
       <h4>Why not only use CFD?</h4>
       <p>
-        CFD is better suited for detailed flow information such as boundary-layer behavior, shock structure, separation, viscous drag buildup, and local pressure distributions. It is also slower to set up and run for large multidimensional sweeps. The immediate goal here is a broad coefficient map over many combinations of &alpha;, &beta;, and elevon deflection. VSPAERO provides the required coefficient data at a practical run cost. Higher-fidelity CFD or test data can still be used later to check or correct selected regions.
+        CFD is better suited for detailed flow information such as boundary-layer behavior, shock structure, separation, viscous drag buildup, and local pressure distributions. It is also slower to set up and run for large multidimensional sweeps. The immediate goal here is a broad coefficient map over many combinations of &alpha;, &beta;, and elevon deflection. VSPAERO provides the required coefficient data at a practical run cost.
       </p>
 
       <h3 id="sampling-domain">2. Sampling Domain</h3>
@@ -400,12 +400,12 @@
 
       <h3 id="data-preparation">3. Data Inputs, Constraints, and Preparation</h3>
       <p>
-        The sparse aerodynamic database is a table of input conditions paired with coefficient outputs. The input side defines the aircraft state and control state for each VSPAERO case. In this project, each sample is identified by Reynolds number, angle of attack, sideslip angle, and elevon configuration.
+        The sparse aerodynamic database is a table of input conditions paired with coefficient outputs. The input side defines the aircraft state and control state for each VSPAERO case. In this project, each sample is identified by angle of attack, sideslip angle, and elevon configuration.
       </p>
 
       <h4>3.1 Inputs: sampled aerodynamic states</h4>
       <p>
-        The primary inputs are sampled points in the aerodynamic and control space. A row can contain <em>Re</em>, &alpha;, &beta;, left elevon deflection, right elevon deflection, symmetric elevon component, and differential elevon component. The same row also contains the VSPAERO coefficient outputs for that state.
+        The primary inputs are sampled points in the aerodynamic and control space. A row can contain &alpha;, &beta;, symmetric elevon component, and differential elevon component. The same row also contains the VSPAERO coefficient outputs for that state.
       </p>
 
       <p>
