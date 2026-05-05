@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Results | Surrogate-Based MPC Control</title>
+  <title>Process | Surrogate-Based MPC Control</title>
 
   <style>
     :root {
@@ -259,6 +259,53 @@
       background: rgba(30, 30, 30, 0.58);
     }
 
+    .next-step-card {
+      display: block;
+      margin-top: 2.2rem;
+      padding: 1.35rem 1.5rem;
+      background: rgba(23, 159, 255, 0.10);
+      border: 1px solid rgba(23, 159, 255, 0.28);
+      border-radius: 18px;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .next-step-card:hover,
+    .next-step-card:focus-visible {
+      transform: translateY(-3px);
+      background: rgba(23, 159, 255, 0.16);
+      border-color: rgba(23, 159, 255, 0.58);
+      outline: none;
+    }
+
+    .next-step-card .kicker-small {
+      display: block;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.72rem;
+      font-weight: 760;
+      margin-bottom: 0.45rem;
+    }
+
+    .next-step-card strong {
+      display: block;
+      color: white;
+      font-size: 1.25rem;
+      line-height: 1.25;
+      margin-bottom: 0.35rem;
+    }
+
+    .next-step-card {
+      display: block;
+      grid-column: 1 / -1; /* Tells the item to span from the first to the last column line */
+      margin-top: 2.2rem;
+      padding: 1.35rem 1.5rem;
+      background: rgba(23, 159, 255, 0.10);
+      border: 1px solid rgba(23, 159, 255, 0.28);
+      border-radius: 18px;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
     .pill-row {
       display: flex;
       flex-wrap: wrap;
@@ -354,16 +401,16 @@
                     With a data-set of around 4000 vectors we have multiple different approaches of creating a model that 
                     accounts for parameters that are on non principal axes. This project will require the use of multiple 
                     different machine learning models. The process will follow these 6 steps.  
-                    <ol> 
-                    <li> Load the data from the master sheets. </li>
-                    <li> Scramble the ordered data from the mastersheets. </li>
-                    <li> Sort the data into train, validate, and test sets.</li>
-                    <li> Normalize the data. </li> 
-                    <li> Organize and fit our data into input sequences and output values. </li>
-                    <li> Build train and evaluate the three model. </li>
-                    <li> Compare the models and choose the best performer. </li>
-                    </ol>
                 </p>
+                <ol style="padding-left: 1.5rem; margin-top: 1rem;">
+                  <li> Load the data from the master sheets. </li>
+                  <li> Scramble the ordered data from the mastersheets. </li>
+                  <li> Sort the data into train, validate, and test sets.</li>
+                  <li> Normalize the data. </li> 
+                  <li> Organize and fit our data into input sequences and output values. </li>
+                  <li> Build train and evaluate the three model. </li>
+                  <li> Compare the models and choose the best performer. </li>
+                </ol>
             </article>
 
             <article id="data" class="card full">
@@ -774,12 +821,30 @@ yScaler = StandardScaler()</code></pre>
                   <h3> 7.5.2 Convergence Plot</h3>
                   <img src="assets/wmlp_convergence.gif" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 1000px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
             </article>
-
+            
+            <article id = "evaluation" class="card full"> 
+              <h2> Conclusion </h2>
+              <p> 
+                Based on the evaluation the Mutli-Layer Perceptron neural network is the clear winner. While the Gradient
+                Boosted Trees method showed great performance it still exhibited slight hiccups in predicting 
+                <i>C<sub>n</sub></i> and overall showed worse performance in the MAE metric. Multivariate Linear Regression
+                while helpful for our linear parameters is simply outclassed by the MLP.
+              </p>
+            </article>
+            
+          <a class="next-step-card" href="results.html" aria-label="Continue to Surrogate Model Control page">
+            <span class="kicker-small">Next step in the flowchart</span>
+            <strong>Surrogate Model Based Control &rarr;</strong>
+            <p>
+              The next stage discusses how the MLP is integrated into a MPC controller. It goes over how well it performs 
+              and the results of our surrogate model.
+            </p>
+          </a>
 
         </section>
     </main>
     <footer>
-    <p>© 2026 AeroTelligence, Group 14. Results page for surrogate-based MPC control of a fixed-thrust flying wing.</p>
+    <p>© 2026 AeroTelligence, Group 14. Process page for surrogate-based MPC control of a fixed-thrust flying wing.</p>
   </footer>
 </body>
 </html>
