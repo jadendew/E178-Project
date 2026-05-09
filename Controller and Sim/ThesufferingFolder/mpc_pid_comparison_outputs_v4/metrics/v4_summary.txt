@@ -1,0 +1,38 @@
+Controller comparison summary: v4
+======================================================================
+
+      controller  heading_RMSE_deg  pitch_RMSE_deg  roll_RMSE_deg  mean_abs_heading_err_deg  mean_abs_pitch_err_deg  mean_abs_roll_err_deg  max_abs_heading_err_deg  max_abs_pitch_err_deg  max_abs_roll_err_deg  p_deg_s_RMS  p_deg_s_max_abs  q_deg_s_RMS  q_deg_s_max_abs  r_deg_s_RMS  r_deg_s_max_abs  deltaS_RMS_deg  deltaS_max_abs_deg  deltaS_step_RMS_deg  deltaD_RMS_deg  deltaD_max_abs_deg  deltaD_step_RMS_deg  alpha_max_abs_deg  alpha_RMS_deg  beta_max_abs_deg  beta_RMS_deg  mean_V_m_s  min_V_m_s  max_V_m_s
+             MPC          4.589830        7.918254       5.996612                  2.956199                5.938558               4.094966                18.936291              30.984563             17.878771    11.895980        55.341099    22.381751       136.511321    13.119467        70.565322        8.668418               20.00             0.727683        2.796661                10.0             0.509846          14.036243       4.997259         13.657283      2.913659   23.630785  18.692489  27.355872
+PID/GainSchedule          7.809133        5.005334       5.366549                  4.471261                4.493823               3.451612                31.374502               8.927055             20.051361     5.534064        27.551611    14.869129       128.612856    24.820250        78.030277        4.980255               15.84             0.158817        3.888370                10.0             0.102448          14.036243       3.632663         17.776468      5.466951   25.393040  20.690089  28.154578
+
+Percent change from PID/GainSchedule to MPC:
+(negative means MPC is lower for that metric)
+
+heading_RMSE_deg              : PID=      7.8091, MPC=      4.5898, change=   -41.22%
+pitch_RMSE_deg                : PID=      5.0053, MPC=      7.9183, change=    58.20%
+roll_RMSE_deg                 : PID=      5.3665, MPC=      5.9966, change=    11.74%
+mean_abs_heading_err_deg      : PID=      4.4713, MPC=      2.9562, change=   -33.88%
+mean_abs_pitch_err_deg        : PID=      4.4938, MPC=      5.9386, change=    32.15%
+mean_abs_roll_err_deg         : PID=      3.4516, MPC=       4.095, change=    18.64%
+max_abs_heading_err_deg       : PID=      31.375, MPC=      18.936, change=   -39.64%
+max_abs_pitch_err_deg         : PID=      8.9271, MPC=      30.985, change=   247.09%
+max_abs_roll_err_deg          : PID=      20.051, MPC=      17.879, change=   -10.84%
+p_deg_s_RMS                   : PID=      5.5341, MPC=      11.896, change=   114.96%
+p_deg_s_max_abs               : PID=      27.552, MPC=      55.341, change=   100.86%
+q_deg_s_RMS                   : PID=      14.869, MPC=      22.382, change=    50.52%
+q_deg_s_max_abs               : PID=      128.61, MPC=      136.51, change=     6.14%
+r_deg_s_RMS                   : PID=       24.82, MPC=      13.119, change=   -47.14%
+r_deg_s_max_abs               : PID=       78.03, MPC=      70.565, change=    -9.57%
+deltaS_RMS_deg                : PID=      4.9803, MPC=      8.6684, change=    74.06%
+deltaS_max_abs_deg            : PID=       15.84, MPC=          20, change=    26.26%
+deltaS_step_RMS_deg           : PID=     0.15882, MPC=     0.72768, change=   358.19%
+deltaD_RMS_deg                : PID=      3.8884, MPC=      2.7967, change=   -28.08%
+deltaD_max_abs_deg            : PID=          10, MPC=          10, change=     0.00%
+deltaD_step_RMS_deg           : PID=     0.10245, MPC=     0.50985, change=   397.67%
+alpha_max_abs_deg             : PID=      14.036, MPC=      14.036, change=     0.00%
+alpha_RMS_deg                 : PID=      3.6327, MPC=      4.9973, change=    37.56%
+beta_max_abs_deg              : PID=      17.776, MPC=      13.657, change=   -23.17%
+beta_RMS_deg                  : PID=       5.467, MPC=      2.9137, change=   -46.70%
+mean_V_m_s                    : PID=      25.393, MPC=      23.631, change=    -6.94%
+min_V_m_s                     : PID=       20.69, MPC=      18.692, change=    -9.65%
+max_V_m_s                     : PID=      28.155, MPC=      27.356, change=    -2.84%
