@@ -485,8 +485,6 @@ shuffledTest = testDat.sample(frac=1, random_state=67).reset_index(drop=True).to
 
                 <p> 
                     For this specific use case we will do a standard split of 70% train, 10% validate, and 20% test data.
-                    We only do this for the noposed data as that will be used purely for testing, we will insert it into
-                    the created test dataset after it has been split.
                 </p>
                 <img src="assets/splitdat_func.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 1000px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
                 <p> 
@@ -659,7 +657,7 @@ yScaler = StandardScaler()</code></pre>
                     <li> ReLu is a 'sharp' activation function, meaning that approximating our smooth data can 
                         be worsened by the jagged spikes created by such a black and white function.</li>
                 </ul>
-                <img src="assets/mlp_init.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 750px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
+                <img src="assets/mlp_def.png" alt="Data Flow Diagram" style="display: block; max-width: 100%; width: 750px; border-radius: 8px; border: 1px solid #30363d; margin: 0 auto;">
                     
                 <h2> 6.3.2 Converting our data into PyTorch tensors</h2>
                 <p> 
